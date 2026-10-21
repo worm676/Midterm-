@@ -1160,6 +1160,30 @@ body.has-side-timers .site-footer {
   }
 }
 
+/* Rare: a full 360 with only the head */
+.owl-head {
+  transform-origin: 32px 33px;
+}
+
+.stoody.is-head-spinning .owl-head {
+  animation: stoody-head-spin 1.4s ease-in-out;
+}
+
+@keyframes stoody-head-spin {
+  0% {
+    transform: rotate(0);
+  }
+  15% {
+    transform: rotate(-20deg);
+  }
+  85% {
+    transform: rotate(370deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 /* Snoring: a slow breathe and floating Zs */
 .stoody.is-sleeping .stoody-button {
   animation: stoody-breathe 1.6s ease-in-out infinite;
@@ -1218,6 +1242,7 @@ body.has-side-timers .site-footer {
 
 @media (prefers-reduced-motion: reduce) {
   .stoody.is-hanging,
+  .stoody.is-head-spinning .owl-head,
   .stoody.is-sleeping .stoody-button,
   .stoody.is-flying .owl-wing-left,
   .stoody.is-flying .owl-wing-right {
