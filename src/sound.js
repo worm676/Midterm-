@@ -3,14 +3,33 @@
 let ctx = null;
 
 // Browsers (especially iOS Safari) only allow audio after a user gesture,
-// so call this from a click before the timer finishes.
+// so call this from a tap or click before any sound needs to play.
 export function unlockAudio() {
   const AudioCtx = window.AudioContext || window.webkitAudioContext;
   if (!AudioCtx) return null;
-  ctx ??= new AudioCtx();
-  if (ctx.state === 'suspended') ctx.resume();
+  if (!ctx) {
+    // iOS 17+: treat this as media playback so it isn't muted by the silent switch.
+    try {
+      if (navigator.audioSession) navigator.audioSession.type = 'playback';
+    } catch {
+      // Not supported; sound still works when the phone isn't on silent.
+    }
+    ctx = new AudioCtx();
+    // iOS only fully unlocks audio once a sound starts during a tap, so play a silent blip.
+    const blip = ctx.createBufferSource();
+    blip.buffer = ctx.createBuffer(1, 1, 22050);
+    blip.connect(ctx.destination);
+    blip.start();
+  }
+  // "suspended" before the first tap, or iOS "interrupted" after a call or lock screen.
+  if (ctx.state !== 'running') ctx.resume();
   return ctx;
 }
+
+// When returning to the page, try to wake audio that iOS paused in the background.
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && ctx && ctx.state !== 'running') ctx.resume().catch(() => {});
+});
 
 // One decaying note. `partials` are [frequency multiple, relative volume] pairs.
 export function note(ac, out, { freq, at, length = 1, type = 'sine', volume = 0.3, partials = [[1, 1]] }) {

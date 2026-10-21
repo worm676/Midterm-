@@ -356,6 +356,7 @@ function createSideTimer({ name, duration }, { onRemove, onTick }) {
 
   chip.addEventListener('click', () => setOpen(actions.hidden));
   bell.addEventListener('click', () => {
+    unlockAudio();
     const open = ringPanel.hidden;
     ringPanel.hidden = !open;
     bell.setAttribute('aria-expanded', String(open));

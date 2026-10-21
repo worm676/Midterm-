@@ -1,5 +1,5 @@
 import { KEYS, loadString, saveString } from './storage.js';
-import { RINGS, playRing } from './sound.js';
+import { RINGS, playRing, unlockAudio } from './sound.js';
 
 let current = RINGS[0].id;
 
@@ -25,7 +25,11 @@ export function initRingMenu() {
     if (open) select.focus();
   }
 
-  tab.addEventListener('click', () => setOpen(panel.hidden));
+  tab.addEventListener('click', () => {
+    // Unlock audio on this tap: on iPhone, picking from the dropdown may not count as one.
+    unlockAudio();
+    setOpen(panel.hidden);
+  });
 
   select.addEventListener('change', () => {
     current = select.value;

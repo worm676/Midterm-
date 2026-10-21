@@ -1,5 +1,6 @@
 import { KEYS, loadString, saveString } from './storage.js';
 import { STYLES, playMusic, stopMusic, isPlaying, setMusicVolume } from './music.js';
+import { unlockAudio } from './sound.js';
 
 export function initMusicMenu() {
   const tab = document.getElementById('music-tab');
@@ -34,7 +35,11 @@ export function initMusicMenu() {
     if (open) select.focus();
   }
 
-  tab.addEventListener('click', () => setOpen(panel.hidden));
+  tab.addEventListener('click', () => {
+    // Unlock audio on this tap: on iPhone, picking from the dropdown may not count as one.
+    unlockAudio();
+    setOpen(panel.hidden);
+  });
 
   select.addEventListener('change', () => {
     choice = select.value;
