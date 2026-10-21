@@ -10,6 +10,7 @@ A simple, responsive study planner built for a class midterm project.
 - **Ring sound**: a chime plays when a sprint finishes. Open the **Ring** tab on the right edge of the screen to pick Chime, Bell, Ding-dong, Marimba, Harp, Digital alarm, Cowbell, Piano, Flute, or Off, and preview it. Sounds are generated in the browser with the Web Audio API (no audio files)
 - **Study break art**: 20 landscape illustrations drawn in the browser as SVG. 10 classics always stay, and 10 new pieces (new styles and new layouts) appear every Monday, marked "New this week". Swipe, scroll, or use the arrow buttons/keys to browse; it changes on its own every 90 seconds (with a Pause button)
 - **Stoody the owl**: a study buddy with glasses who hangs from the red header line. Press Stoody to see a flip onto the line, a flight away and back (landing somewhere new on the line), or a snoring nap (and, rarely, a full 360° head spin)
+- **Background pulse**: clicking the empty page background sends a soft ripple out from that spot, behind the cards
 - **Theme switcher**: Light, Dark, or System (follows your device setting)
 - **Next steps**: a three-item checklist with a progress bar; each step can be checked off and its text edited
 - **Saves automatically**: tasks, next steps (text and progress), theme, timer setups, ring choice, and music choice/volume are stored in `localStorage`, so they survive a refresh
@@ -70,6 +71,7 @@ src/music.js      Generated background music
 src/musicMenu.js  Music picker tab
 src/nextSteps.js  "Next steps" checklist
 src/stoody.js     Stoody the study buddy owl
+src/pulse.js      Background click ripple
 src/storage.js    Safe localStorage helpers
 src/style.css     Styles
 ```

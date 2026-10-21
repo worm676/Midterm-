@@ -7,6 +7,7 @@ import { initArt } from './art.js';
 import { initRingMenu } from './ringMenu.js';
 import { initMusicMenu } from './musicMenu.js';
 import { initStoody } from './stoody.js';
+import { initPulse } from './pulse.js';
 
 initTheme();
 initTasks();
@@ -16,3 +17,4 @@ initArt();
 initRingMenu();
 initMusicMenu();
 initStoody();
+initPulse();

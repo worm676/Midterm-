@@ -1309,6 +1309,58 @@ body.has-side-timers .site-footer {
   }
 }
 
+/* Background pulse: a ripple behind the cards where the page is clicked */
+.pulse-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.layout,
+.site-footer {
+  position: relative;
+  z-index: 1;
+}
+
+.pulse {
+  position: absolute;
+  width: 520px;
+  height: 520px;
+  margin: -260px 0 0 -260px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--primary) 0%, transparent 65%);
+  opacity: 0;
+  animation: pulse-out 0.9s ease-out forwards;
+}
+
+@keyframes pulse-out {
+  0% {
+    transform: scale(0.1);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse {
+    animation-name: pulse-fade;
+  }
+
+  @keyframes pulse-fade {
+    0% {
+      opacity: 0.2;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+}
+
 /* Footer */
 .site-footer {
   padding-block: 8px 28px;
