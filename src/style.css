@@ -200,16 +200,33 @@ select {
   padding-block: 20px;
 }
 
+/* On phones the columns dissolve into one stack, with the artwork last. */
+.col {
+  display: contents;
+}
+
+.art-card {
+  order: 1;
+}
+
 @media (min-width: 820px) {
   .layout {
     grid-template-columns: 1.4fr 1fr;
-    align-items: start;
     gap: 20px;
     padding-block: 28px;
   }
 
-  .tasks-card {
-    grid-row: span 2;
+  .col {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* Both columns stretch to the same height, so the artwork's bottom
+     lines up with the bottom of the improvement waves card. */
+  .art-card,
+  .waves-card {
+    flex: 1;
   }
 }
 
@@ -548,6 +565,72 @@ input[type='checkbox'] {
 
 #waves-bar {
   background: var(--accent);
+}
+
+/* Artwork */
+.art-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.art-track {
+  display: flex;
+  flex: 1;
+  min-height: 240px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  border-radius: 12px;
+  background: var(--surface-2);
+}
+
+.art-track::-webkit-scrollbar {
+  display: none;
+}
+
+.art-slide {
+  position: relative;
+  flex: 0 0 100%;
+  margin: 0;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.art-slide img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.art-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  margin-top: 12px;
+}
+
+.art-caption {
+  font-weight: 600;
+}
+
+.art-controls {
+  display: flex;
+  gap: 6px;
+}
+
+.art-controls .btn {
+  min-width: 44px;
+}
+
+#art-pause {
+  min-width: 76px;
 }
 
 /* Footer */

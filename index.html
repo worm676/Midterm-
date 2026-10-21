@@ -53,79 +53,105 @@
     </header>
 
     <main id="main" class="container layout">
-      <!-- Tasks -->
-      <section class="card tasks-card" aria-labelledby="tasks-heading">
-        <div class="card-head">
-          <h2 id="tasks-heading">Study tasks</h2>
-          <p class="muted" id="task-summary" aria-live="polite"></p>
-        </div>
-
-        <form id="task-form" class="task-form" autocomplete="off" novalidate>
-          <label for="task-input">New task</label>
-          <div class="input-row">
-            <input
-              id="task-input"
-              name="task"
-              type="text"
-              maxlength="120"
-              placeholder="e.g. Review chapter 4 notes"
-              required
-            />
-            <button type="submit" class="btn btn-primary">Add task</button>
+      <div class="col col-left">
+        <!-- Tasks -->
+        <section class="card tasks-card" aria-labelledby="tasks-heading">
+          <div class="card-head">
+            <h2 id="tasks-heading">Study tasks</h2>
+            <p class="muted" id="task-summary" aria-live="polite"></p>
           </div>
-          <p class="error" id="task-error" role="alert"></p>
-        </form>
 
-        <ul id="task-list" class="task-list" aria-label="Study tasks"></ul>
-        <p id="task-empty" class="empty">No tasks yet. Add your first study task above.</p>
-      </section>
-
-      <!-- Timer -->
-      <section class="card timer-card" aria-labelledby="timer-heading">
-        <div class="card-head">
-          <h2 id="timer-heading">Study timer</h2>
-        </div>
-
-        <div class="timer-picker" id="timer-picker" role="group" aria-labelledby="timer-length-label">
-          <p class="picker-label" id="timer-length-label">Sprint length</p>
-          <p class="picker-hint muted">Scroll, swipe, or use the arrow keys.</p>
-          <div class="wheels">
-            <div class="picker-band" aria-hidden="true"></div>
-            <div class="wheel-group">
-              <div class="wheel" id="wheel-hours" tabindex="0" role="spinbutton" aria-label="Hours"></div>
-              <span class="wheel-unit" aria-hidden="true">hours</span>
+          <form id="task-form" class="task-form" autocomplete="off" novalidate>
+            <label for="task-input">New task</label>
+            <div class="input-row">
+              <input
+                id="task-input"
+                name="task"
+                type="text"
+                maxlength="120"
+                placeholder="e.g. Review chapter 4 notes"
+                required
+              />
+              <button type="submit" class="btn btn-primary">Add task</button>
             </div>
-            <div class="wheel-group">
-              <div class="wheel" id="wheel-minutes" tabindex="0" role="spinbutton" aria-label="Minutes"></div>
-              <span class="wheel-unit" aria-hidden="true">min</span>
+            <p class="error" id="task-error" role="alert"></p>
+          </form>
+
+          <ul id="task-list" class="task-list" aria-label="Study tasks"></ul>
+          <p id="task-empty" class="empty">No tasks yet. Add your first study task above.</p>
+        </section>
+
+        <!-- Artwork -->
+        <section class="card art-card" aria-labelledby="art-heading" aria-roledescription="carousel">
+          <div class="card-head">
+            <h2 id="art-heading">Study break art</h2>
+            <p class="muted" id="art-counter" aria-live="polite"></p>
+          </div>
+          <div
+            class="art-track"
+            id="art-track"
+            tabindex="0"
+            aria-label="Artwork. Swipe, scroll, or use the left and right arrow keys to browse."
+          ></div>
+          <div class="art-footer">
+            <p class="art-caption" id="art-caption"></p>
+            <div class="art-controls">
+              <button type="button" class="btn btn-small" id="art-prev" aria-label="Previous artwork">&larr;</button>
+              <button type="button" class="btn btn-small" id="art-pause">Pause</button>
+              <button type="button" class="btn btn-small" id="art-next" aria-label="Next artwork">&rarr;</button>
             </div>
           </div>
-        </div>
+        </section>
+      </div>
 
-        <div class="timer-running" id="timer-running" hidden>
-          <div class="timer-display" role="timer" aria-labelledby="timer-heading">
-            <span id="timer-time">25:00</span>
+      <div class="col col-right">
+        <!-- Timer -->
+        <section class="card timer-card" aria-labelledby="timer-heading">
+          <div class="card-head">
+            <h2 id="timer-heading">Study timer</h2>
           </div>
-          <div class="progress" aria-hidden="true"><span id="timer-bar"></span></div>
-        </div>
-        <p id="timer-status" class="muted center" aria-live="polite">Ready when you are.</p>
 
-        <div class="timer-controls">
-          <button type="button" id="timer-start" class="btn btn-primary">Start</button>
-          <button type="button" id="timer-pause" class="btn" disabled>Pause</button>
-          <button type="button" id="timer-reset" class="btn">Reset</button>
-        </div>
-      </section>
+          <div class="timer-picker" id="timer-picker" role="group" aria-labelledby="timer-length-label">
+            <p class="picker-label" id="timer-length-label">Sprint length</p>
+            <p class="picker-hint muted">Scroll, swipe, or use the arrow keys.</p>
+            <div class="wheels">
+              <div class="picker-band" aria-hidden="true"></div>
+              <div class="wheel-group">
+                <div class="wheel" id="wheel-hours" tabindex="0" role="spinbutton" aria-label="Hours"></div>
+                <span class="wheel-unit" aria-hidden="true">hours</span>
+              </div>
+              <div class="wheel-group">
+                <div class="wheel" id="wheel-minutes" tabindex="0" role="spinbutton" aria-label="Minutes"></div>
+                <span class="wheel-unit" aria-hidden="true">min</span>
+              </div>
+            </div>
+          </div>
 
-      <!-- Improvement waves -->
-      <section class="card waves-card" aria-labelledby="waves-heading">
-        <div class="card-head">
-          <h2 id="waves-heading">Next 4 Improvement Waves</h2>
-          <p class="muted" id="waves-summary" aria-live="polite"></p>
-        </div>
-        <div class="progress" aria-hidden="true"><span id="waves-bar"></span></div>
-        <ul id="waves-list" class="waves-list"></ul>
-      </section>
+          <div class="timer-running" id="timer-running" hidden>
+            <div class="timer-display" role="timer" aria-labelledby="timer-heading">
+              <span id="timer-time">25:00</span>
+            </div>
+            <div class="progress" aria-hidden="true"><span id="timer-bar"></span></div>
+          </div>
+          <p id="timer-status" class="muted center" aria-live="polite">Ready when you are.</p>
+
+          <div class="timer-controls">
+            <button type="button" id="timer-start" class="btn btn-primary">Start</button>
+            <button type="button" id="timer-pause" class="btn" disabled>Pause</button>
+            <button type="button" id="timer-reset" class="btn">Reset</button>
+          </div>
+        </section>
+
+        <!-- Improvement waves -->
+        <section class="card waves-card" aria-labelledby="waves-heading">
+          <div class="card-head">
+            <h2 id="waves-heading">Next 4 Improvement Waves</h2>
+            <p class="muted" id="waves-summary" aria-live="polite"></p>
+          </div>
+          <div class="progress" aria-hidden="true"><span id="waves-bar"></span></div>
+          <ul id="waves-list" class="waves-list"></ul>
+        </section>
+      </div>
     </main>
 
     <footer class="site-footer container">

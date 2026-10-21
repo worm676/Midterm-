@@ -5,7 +5,8 @@ A simple, responsive study planner built for a class midterm project.
 ## Features
 
 - **Study tasks**: add, edit, mark complete, and delete tasks
-- **Study timer**: iPhone-style scroll wheels for hours (0–12) and minutes (5-minute steps), then start, pause/resume, and reset
+- **Study timer**: iPhone-style scroll wheels for hours (0–12) and minutes (0–59), then start, pause/resume, and reset
+- **Study break art**: a carousel of original landscape illustrations. Swipe, scroll, or use the arrow buttons/keys to browse; it changes on its own every 90 seconds (with a Pause button)
 - **Theme switcher**: Light, Dark, or System (follows your device setting)
 - **Next 4 Improvement Waves**: a four-item checklist with a progress bar
 - **Saves automatically**: tasks, checklist progress, and theme are stored in `localStorage`, so they survive a refresh
@@ -52,12 +53,13 @@ Run `npm run build` locally, then drag the `dist/` folder onto
 ```
 index.html        Page markup
 netlify.toml      Netlify build settings
-public/           Static files (favicon)
+public/           Static files (favicon, artwork in public/art/)
 src/main.js       Entry point
 src/tasks.js      Task list: add, edit, complete, delete
 src/timer.js      Study timer
 src/wheel.js      iPhone-style scroll wheel picker
 src/theme.js      Light / dark / system theme
+src/art.js        Study break art carousel
 src/waves.js      "Next 4 Improvement Waves" checklist
 src/storage.js    Safe localStorage helpers
 src/style.css     Styles

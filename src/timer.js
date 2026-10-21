@@ -1,7 +1,7 @@
 import { createWheel } from './wheel.js';
 
 const MAX_HOURS = 12;
-const MINUTE_STEP = 5;
+const MINUTE_STEP = 1;
 const DEFAULT_HOURS = 0;
 const DEFAULT_MINUTES = 25;
 
