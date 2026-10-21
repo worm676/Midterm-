@@ -393,7 +393,9 @@ input[type='number'] {
 }
 
 .task-completed {
-  margin-top: 2px;
+  align-self: center;
+  margin-right: 4px;
+  white-space: nowrap;
   color: var(--success);
   font-size: 0.8rem;
   font-weight: 600;
@@ -1244,6 +1246,18 @@ body.has-side-timers .site-footer {
   }
 
   .task-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+/* On phones, completed tasks put the stamp and buttons under the title. */
+@media (max-width: 600px) {
+  .task:has(.task-completed) {
+    flex-wrap: wrap;
+  }
+
+  .task:has(.task-completed) .task-actions {
     width: 100%;
     justify-content: flex-end;
   }

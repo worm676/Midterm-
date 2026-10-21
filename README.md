@@ -4,7 +4,7 @@ A simple, responsive study planner built for a class midterm project.
 
 ## Features
 
-- **Study tasks**: add, edit, mark complete, and delete tasks, with an optional "time needed" estimate per task (the list shows the total time left). Checking a task off records when it was completed, shown on the task (e.g. "Completed today at 3:42 PM")
+- **Study tasks**: add, edit, mark complete, and delete tasks, with an optional "time needed" estimate per task (the list shows the total time left). Checking a task off records when it was completed, shown next to the Edit button (e.g. "✓ 3:42 PM" today, "✓ Mar 4, 3:07 PM" earlier)
 - **Study timers**: add as many timers as you like, each with its own name and iPhone-style scroll wheels (swipe, scroll, drag with the mouse, or use the arrow keys) for hours (0–12) and minutes (0–59), plus start, pause/resume, reset, and remove. Timers can run at the same time. Press **Side timer** on a set timer to start a compact copy in the bottom-right dock (up to 4) showing its name and time left; tap it to pause/resume, reset, or remove it
 - **Background music**: open the **Music** tab on the left edge to play relaxing music: Lo-fi, Jazz, Jazz drums, Criminal jazz, Classics (Bach's Prelude in C), Piano, Guitar, Flute, or a Surprise style, with Play/Pause and volume. It is generated live in the browser (no audio files or streaming)
 - **Ring sound**: a chime plays when a sprint finishes. Open the **Ring** tab on the right edge of the screen to pick Chime, Bell, Ding-dong, Marimba, Harp, Digital alarm, Cowbell, Piano, Flute, or Off, and preview it. Sounds are generated in the browser with the Web Audio API (no audio files)

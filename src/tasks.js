@@ -20,18 +20,21 @@ function formatMinutes(total) {
   return m ? `${h} h ${m} min` : `${h} h`;
 }
 
-// "Completed today at 3:42 PM", or with the date when it was another day.
+// Compact stamp for the task row ("3:42 PM" today, "Mar 4, 3:42 PM" this year,
+// "Mar 4, 2025" before that), plus the full wording for screen readers.
 function formatCompleted(iso) {
   const date = new Date(iso);
   const now = new Date();
   const time = date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-  if (date.toDateString() === now.toDateString()) return `Completed today at ${time}`;
-  const day = date.toLocaleDateString([], {
-    month: 'short',
-    day: 'numeric',
-    ...(date.getFullYear() !== now.getFullYear() && { year: 'numeric' }),
-  });
-  return `Completed ${day} at ${time}`;
+  const day = date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+  if (date.toDateString() === now.toDateString()) {
+    return { short: time, full: `Completed today at ${time}` };
+  }
+  if (date.getFullYear() === now.getFullYear()) {
+    return { short: `${day}, ${time}`, full: `Completed ${day} at ${time}` };
+  }
+  const year = date.getFullYear();
+  return { short: `${day}, ${year}`, full: `Completed ${day}, ${year} at ${time}` };
 }
 
 function validDate(value) {
@@ -110,14 +113,6 @@ export function initTasks() {
       time.append(hint, formatMinutes(task.minutes));
       text.append(time);
     }
-    if (task.done && task.completedAt) {
-      const stamp = document.createElement('time');
-      stamp.className = 'task-completed';
-      stamp.dateTime = task.completedAt;
-      stamp.textContent = formatCompleted(task.completedAt);
-      stamp.title = new Date(task.completedAt).toLocaleString();
-      text.append(stamp);
-    }
 
     label.append(box, text);
 
@@ -151,6 +146,22 @@ export function initTasks() {
       else input.focus();
     });
 
+    // Completion time sits just left of the Edit button.
+    if (task.done && task.completedAt) {
+      const { short, full } = formatCompleted(task.completedAt);
+      const stamp = document.createElement('time');
+      stamp.className = 'task-completed';
+      stamp.dateTime = task.completedAt;
+      stamp.title = full;
+      const visible = document.createElement('span');
+      visible.setAttribute('aria-hidden', 'true');
+      visible.textContent = short;
+      const spoken = document.createElement('span');
+      spoken.className = 'visually-hidden';
+      spoken.textContent = full;
+      stamp.append(visible, spoken);
+      actions.append(stamp);
+    }
     actions.append(editBtn, delBtn);
     li.append(label, actions);
     return li;
