@@ -12,8 +12,8 @@ A simple, responsive study planner built for a class midterm project.
 - **Stoody the owl**: a study buddy with glasses who hangs from the red header line. Press Stoody to see a flip onto the line, a flight away and back (landing somewhere new on the line), or a snoring nap (and, rarely, a full 360° head spin)
 - **Background pulse**: clicking the empty page background sends a soft ripple out from that spot, behind the cards
 - **Theme switcher**: Light, Dark, or System (follows your device setting)
-- **Next steps**: a three-item checklist with a progress bar; each step can be checked off and its text edited
-- **Saves automatically**: tasks, next steps (text and progress), theme, timer setups, ring choice, and music choice/volume are stored in `localStorage`, so they survive a refresh
+- **Next 4 Improvement Waves**: a four-item checklist with a progress bar; each item can be checked off and its text edited
+- **Saves automatically**: tasks, improvement waves checklist (text and progress), theme, timer setups, ring choice, and music choice/volume are stored in `localStorage`, so they survive a refresh
 - **Responsive and accessible**: works at iPhone 16 Pro Max width (440px), has 44px touch targets, labelled controls, visible focus rings, a skip link, and full keyboard support (Enter saves an edit, Escape cancels it)
 
 No login, database, or external API. All data stays in the browser.
@@ -69,7 +69,7 @@ src/sound.js      Synthesized ring sounds
 src/ringMenu.js   Ring picker tab
 src/music.js      Generated background music
 src/musicMenu.js  Music picker tab
-src/nextSteps.js  "Next steps" checklist
+src/nextSteps.js  "Next 4 Improvement Waves" checklist
 src/stoody.js     Stoody the study buddy owl
 src/pulse.js      Background click ripple
 src/storage.js    Safe localStorage helpers

@@ -1,20 +1,25 @@
 import { KEYS, load, save } from './storage.js';
 
 const DEFAULT_STEPS = [
-  'Add due dates and priority tags to tasks',
-  'Track completed sprints and a daily streak',
-  'Export and import study data as a file',
+  'Wave 1: Add due dates and priority tags to tasks',
+  'Wave 2: Track completed sprints and a daily streak',
+  'Wave 3: Export and import study data as a file',
+  'Wave 4: Add a weekly summary of total focus time',
 ];
 
 function loadSteps() {
   const saved = load(KEYS.nextSteps, null);
-  if (Array.isArray(saved) && saved.length === DEFAULT_STEPS.length) {
-    return saved.map((s, i) => ({
-      text: typeof s?.text === 'string' && s.text.trim() ? s.text.trim() : DEFAULT_STEPS[i],
-      done: Boolean(s?.done),
-    }));
+  if (Array.isArray(saved) && saved.length) {
+    // Keep saved text and progress; fill any missing items with defaults.
+    return DEFAULT_STEPS.map((fallback, i) => {
+      const s = saved[i];
+      return {
+        text: typeof s?.text === 'string' && s.text.trim() ? s.text.trim() : fallback,
+        done: Boolean(s?.done),
+      };
+    });
   }
-  // Carry over check marks from the old "improvement waves" checklist.
+  // Carry over check marks from the original checklist format.
   const old = load(KEYS.waves, {}) ?? {};
   return DEFAULT_STEPS.map((text, i) => ({ text, done: Boolean(old[`wave-${[1, 2, 4][i]}`]) }));
 }
@@ -58,7 +63,7 @@ export function initNextSteps() {
     editBtn.type = 'button';
     editBtn.className = 'btn btn-small';
     editBtn.textContent = 'Edit';
-    editBtn.setAttribute('aria-label', `Edit next step ${i + 1}: ${step.text}`);
+    editBtn.setAttribute('aria-label', `Edit improvement wave ${i + 1}: ${step.text}`);
     editBtn.addEventListener('click', () => {
       editing = i;
       render();
@@ -78,7 +83,7 @@ export function initNextSteps() {
     const label = document.createElement('label');
     label.className = 'visually-hidden';
     label.htmlFor = `step-edit-${i}`;
-    label.textContent = `Edit next step ${i + 1}`;
+    label.textContent = `Edit improvement wave ${i + 1}`;
     const field = document.createElement('input');
     field.type = 'text';
     field.id = `step-edit-${i}`;

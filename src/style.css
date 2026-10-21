@@ -229,7 +229,7 @@ select {
   }
 
   /* Both columns stretch to the same height, so the artwork's bottom
-     lines up with the bottom of the next steps card. */
+     lines up with the bottom of the improvement waves card. */
   .art-card,
   .steps-card {
     flex: 1;
