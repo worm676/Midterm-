@@ -6,7 +6,7 @@ A simple, responsive study planner built for a class midterm project.
 
 - **Study tasks**: add, edit, mark complete, and delete tasks
 - **Study timer**: iPhone-style scroll wheels for hours (0–12) and minutes (0–59), then start, pause/resume, and reset
-- **Ring sound**: a chime plays when a sprint finishes. Open the **Ring** tab on the right edge of the screen to pick Chime, Bell, Ding-dong, Marimba, Harp, Digital alarm, or Off, and preview it. Sounds are generated in the browser with the Web Audio API (no audio files)
+- **Ring sound**: a chime plays when a sprint finishes. Open the **Ring** tab on the right edge of the screen to pick Chime, Bell, Ding-dong, Marimba, Harp, Digital alarm, Cowbell, Piano, Flute, or Off, and preview it. Sounds are generated in the browser with the Web Audio API (no audio files)
 - **Study break art**: 20 landscape illustrations drawn in the browser as SVG. 10 classics always stay, and 10 new pieces (new styles and new layouts) appear every Monday, marked "New this week". Swipe, scroll, or use the arrow buttons/keys to browse; it changes on its own every 90 seconds (with a Pause button)
 - **Theme switcher**: Light, Dark, or System (follows your device setting)
 - **Next 4 Improvement Waves**: a four-item checklist with a progress bar
