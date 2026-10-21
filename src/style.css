@@ -223,9 +223,9 @@ select {
   }
 
   /* Both columns stretch to the same height, so the artwork's bottom
-     lines up with the bottom of the improvement waves card. */
+     lines up with the bottom of the next steps card. */
   .art-card,
-  .waves-card {
+  .steps-card {
     flex: 1;
   }
 }
@@ -398,7 +398,7 @@ input[type='number'] {
 }
 
 .task-list,
-.waves-list {
+.steps-list {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -626,22 +626,26 @@ input[type='number'] {
 }
 
 /* Waves */
-.waves-list li {
-  padding: 8px 0;
+.step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
 }
 
-.waves-list .check-row {
-  align-items: flex-start;
+.step-main {
+  flex: 1;
+  min-width: 0;
   min-height: 44px;
-  padding-top: 10px;
+  overflow-wrap: anywhere;
 }
 
-.waves-list input:checked + span {
+.step-main input:checked + span {
   color: var(--muted);
   text-decoration: line-through;
 }
 
-#waves-bar {
+#steps-bar {
   background: var(--accent);
 }
 

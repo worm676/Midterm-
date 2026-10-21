@@ -2,7 +2,8 @@
 
 export const KEYS = {
   tasks: 'ssp.tasks',
-  waves: 'ssp.waves',
+  waves: 'ssp.waves', // legacy checklist, read once to migrate
+  nextSteps: 'ssp.nextSteps',
   theme: 'ssp.theme',
   ring: 'ssp.ring',
   timers: 'ssp.timers',

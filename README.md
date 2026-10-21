@@ -10,8 +10,8 @@ A simple, responsive study planner built for a class midterm project.
 - **Ring sound**: a chime plays when a sprint finishes. Open the **Ring** tab on the right edge of the screen to pick Chime, Bell, Ding-dong, Marimba, Harp, Digital alarm, Cowbell, Piano, Flute, or Off, and preview it. Sounds are generated in the browser with the Web Audio API (no audio files)
 - **Study break art**: 20 landscape illustrations drawn in the browser as SVG. 10 classics always stay, and 10 new pieces (new styles and new layouts) appear every Monday, marked "New this week". Swipe, scroll, or use the arrow buttons/keys to browse; it changes on its own every 90 seconds (with a Pause button)
 - **Theme switcher**: Light, Dark, or System (follows your device setting)
-- **Next 4 Improvement Waves**: a four-item checklist with a progress bar
-- **Saves automatically**: tasks, checklist progress, theme, timer setups, ring choice, and music choice/volume are stored in `localStorage`, so they survive a refresh
+- **Next steps**: a three-item checklist with a progress bar; each step can be checked off and its text edited
+- **Saves automatically**: tasks, next steps (text and progress), theme, timer setups, ring choice, and music choice/volume are stored in `localStorage`, so they survive a refresh
 - **Responsive and accessible**: works at iPhone 16 Pro Max width (440px), has 44px touch targets, labelled controls, visible focus rings, a skip link, and full keyboard support (Enter saves an edit, Escape cancels it)
 
 No login, database, or external API. All data stays in the browser.
@@ -67,7 +67,7 @@ src/sound.js      Synthesized ring sounds
 src/ringMenu.js   Ring picker tab
 src/music.js      Generated background music
 src/musicMenu.js  Music picker tab
-src/waves.js      "Next 4 Improvement Waves" checklist
+src/nextSteps.js  "Next steps" checklist
 src/storage.js    Safe localStorage helpers
 src/style.css     Styles
 ```
