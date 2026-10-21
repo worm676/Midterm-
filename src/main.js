@@ -4,9 +4,11 @@ import { initTasks } from './tasks.js';
 import { initTimer } from './timer.js';
 import { initWaves } from './waves.js';
 import { initArt } from './art.js';
+import { initRingMenu } from './ringMenu.js';
 
 initTheme();
 initTasks();
 initTimer();
 initWaves();
 initArt();
+initRingMenu();

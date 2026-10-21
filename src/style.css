@@ -620,6 +620,22 @@ input[type='checkbox'] {
   font-weight: 600;
 }
 
+.art-badge {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  vertical-align: 2px;
+}
+
+:root[data-theme='dark'] .art-badge {
+  color: #0a1220;
+}
+
 .art-controls {
   display: flex;
   gap: 6px;
@@ -631,6 +647,77 @@ input[type='checkbox'] {
 
 #art-pause {
   min-width: 76px;
+}
+
+/* Ring sound tab, pinned to the right edge of the screen */
+.ring-menu {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  z-index: 20;
+  transform: translateY(-50%);
+}
+
+.ring-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 34px;
+  padding: 12px 0;
+  border: 1px solid var(--border);
+  border-right: 0;
+  border-radius: 12px 0 0 12px;
+  background: var(--primary);
+  color: var(--primary-text);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+}
+
+.ring-tab-label {
+  writing-mode: vertical-rl;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.ring-tab[aria-expanded='true'] {
+  background: var(--primary-hover);
+}
+
+.ring-panel {
+  position: absolute;
+  top: 50%;
+  right: calc(100% + 8px);
+  transform: translateY(-50%);
+  display: grid;
+  gap: 8px;
+  width: 220px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.ring-panel[hidden] {
+  display: none;
+}
+
+.ring-panel label {
+  font-weight: 600;
+}
+
+.ring-note {
+  font-size: 0.8rem;
+}
+
+/* Keep page content clear of the tab when there is no side margin. */
+@media (max-width: 1180px) {
+  .layout,
+  .site-footer {
+    padding-right: max(46px, env(safe-area-inset-right));
+  }
 }
 
 /* Footer */

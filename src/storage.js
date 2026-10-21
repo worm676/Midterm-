@@ -4,6 +4,7 @@ export const KEYS = {
   tasks: 'ssp.tasks',
   waves: 'ssp.waves',
   theme: 'ssp.theme',
+  ring: 'ssp.ring',
 };
 
 export function load(key, fallback) {

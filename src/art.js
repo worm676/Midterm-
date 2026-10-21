@@ -1,18 +1,12 @@
 // "Study break art" carousel: swipe, scroll, arrow keys, or buttons to browse.
 // Advances on its own every 90 seconds unless paused.
 
+import { artworkForWeek } from './artGen.js';
+
 const ROTATE_MS = 90 * 1000;
 const WHEEL_COOLDOWN_MS = 450;
 
-const ARTWORK = [
-  { file: 'florida-coast.svg', title: 'Florida Coast', alt: 'Palm trees silhouetted against a sunset over the ocean.' },
-  { file: 'sunrise-peaks.svg', title: 'Sunrise Over the Peaks', alt: 'A sun rising behind layers of purple mountains.' },
-  { file: 'misty-forest.svg', title: 'Misty Pine Forest', alt: 'Rows of pine trees fading into morning mist.' },
-  { file: 'ocean-sunset.svg', title: 'Ocean Sunset', alt: 'The sun setting on the horizon, reflected on calm water.' },
-  { file: 'aurora-lake.svg', title: 'Northern Lights', alt: 'Green and violet aurora over snowy mountains and a lake.' },
-  { file: 'desert-dunes.svg', title: 'Desert Dunes', alt: 'Rolling sand dunes in warm golden light.' },
-  { file: 'night-city.svg', title: 'City Lights', alt: 'A city skyline with lit windows under a full moon and stars.' },
-];
+const ARTWORK = artworkForWeek();
 
 export function initArt() {
   const track = document.getElementById('art-track');
@@ -32,7 +26,7 @@ export function initArt() {
       fig.setAttribute('aria-roledescription', 'slide');
       fig.setAttribute('aria-label', `${i + 1} of ${ARTWORK.length}: ${art.title}`);
       const img = document.createElement('img');
-      img.src = `/art/${art.file}`;
+      img.src = art.src;
       img.alt = art.alt;
       img.draggable = false;
       if (i > 0) img.loading = 'lazy';
@@ -48,7 +42,14 @@ export function initArt() {
   let lastWheel = 0;
 
   function updateText() {
-    caption.textContent = ARTWORK[index].title;
+    const art = ARTWORK[index];
+    caption.textContent = art.title;
+    if (art.isNew) {
+      const badge = document.createElement('span');
+      badge.className = 'art-badge';
+      badge.textContent = 'New this week';
+      caption.append(' ', badge);
+    }
     counter.textContent = `${index + 1} of ${ARTWORK.length}`;
   }
 

@@ -1,4 +1,6 @@
 import { createWheel } from './wheel.js';
+import { playRing, unlockAudio } from './sound.js';
+import { getRing } from './ringMenu.js';
 
 const MAX_HOURS = 12;
 const MINUTE_STEP = 1;
@@ -81,6 +83,7 @@ export function initTimer() {
   function start() {
     if (state === 'running' || duration === 0) return;
     if (remaining <= 0) remaining = duration;
+    unlockAudio();
     endsAt = Date.now() + remaining;
     state = 'running';
     tick = setInterval(() => {
@@ -90,6 +93,7 @@ export function initTimer() {
         stopInterval();
         state = 'done';
         status.textContent = 'Sprint complete. Take a short break!';
+        playRing(getRing());
         render();
         startBtn.focus();
         return;
