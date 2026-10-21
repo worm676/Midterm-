@@ -8,6 +8,7 @@ const MINUTE_STEP = 1;
 const DEFAULT_HOURS = 0;
 const DEFAULT_MINUTES = 25;
 const APP_TITLE = 'Study Sprint Planner';
+const MAX_SIDE_TIMERS = 4;
 
 let nextId = 0;
 
@@ -34,8 +35,75 @@ function clampInt(value, min, max, fallback) {
   return Number.isInteger(n) && n >= min && n <= max ? n : fallback;
 }
 
+// Countdown state machine shared by regular and side timers.
+// States: "idle" (not started), "running", "paused", "done".
+function createCountdown({ onTick, onDone }) {
+  let duration = 0;
+  let remaining = 0;
+  let endsAt = 0;
+  let tick = null;
+  let state = 'idle';
+
+  function stop() {
+    clearInterval(tick);
+    tick = null;
+  }
+
+  return {
+    get state() {
+      return state;
+    },
+    get remaining() {
+      return remaining;
+    },
+    get duration() {
+      return duration;
+    },
+    setDuration(ms) {
+      stop();
+      duration = ms;
+      remaining = ms;
+      state = 'idle';
+    },
+    start() {
+      if (state === 'running' || duration === 0) return false;
+      if (remaining <= 0) remaining = duration;
+      unlockAudio();
+      endsAt = Date.now() + remaining;
+      state = 'running';
+      tick = setInterval(() => {
+        remaining = endsAt - Date.now();
+        if (remaining <= 0) {
+          remaining = 0;
+          stop();
+          state = 'done';
+          playRing(getRing());
+          onDone();
+        }
+        onTick();
+      }, 250);
+      onTick();
+      return true;
+    },
+    pause() {
+      if (state !== 'running') return;
+      remaining = endsAt - Date.now();
+      stop();
+      state = 'paused';
+      onTick();
+    },
+    reset() {
+      stop();
+      remaining = duration;
+      state = 'idle';
+      onTick();
+    },
+    destroy: stop,
+  };
+}
+
 // Builds one timer: name, hour/minute wheels, countdown, and controls.
-function createTimer(config, { onChange, onRemove, onTick }) {
+function createTimer(config, { onChange, onRemove, onTick, onSide }) {
   const id = nextId++;
   const el = document.createElement('section');
   el.className = 'timer';
@@ -67,7 +135,8 @@ function createTimer(config, { onChange, onRemove, onTick }) {
       <button type="button" class="btn btn-primary timer-start">Start</button>
       <button type="button" class="btn timer-pause" disabled>Pause</button>
       <button type="button" class="btn timer-reset">Reset</button>
-    </div>`;
+    </div>
+    <button type="button" class="btn timer-side">Side timer</button>`;
 
   const $ = (selector) => el.querySelector(selector);
   const nameInput = $('.timer-name');
@@ -81,14 +150,18 @@ function createTimer(config, { onChange, onRemove, onTick }) {
   const startBtn = $('.timer-start');
   const pauseBtn = $('.timer-pause');
   const resetBtn = $('.timer-reset');
+  const sideBtn = $('.timer-side');
   const [hoursEl, minutesEl] = el.querySelectorAll('.wheel');
 
-  let duration = 0;
-  let remaining = 0;
-  let endsAt = 0;
-  let tick = null;
-  // "idle" shows the wheels; any other state shows the countdown.
-  let state = 'idle';
+  let sideFull = false;
+  const countdown = createCountdown({
+    onTick: render,
+    onDone: () => {
+      status.textContent = `${name()} complete. Take a short break!`;
+      render();
+      startBtn.focus();
+    },
+  });
 
   nameInput.value = config.name;
 
@@ -115,12 +188,12 @@ function createTimer(config, { onChange, onRemove, onTick }) {
     el.setAttribute('aria-label', name());
     display.setAttribute('aria-label', `${name()} time left`);
     removeBtn.setAttribute('aria-label', `Remove ${name()}`);
+    sideBtn.setAttribute('aria-label', `Start ${name()} as a side timer`);
   }
 
   function updateFromWheels() {
-    duration = (hours.value * 60 + minutes.value) * 60 * 1000;
-    remaining = duration;
-    status.textContent = duration === 0 ? 'Pick a length above 0 to start.' : 'Ready when you are.';
+    countdown.setDuration((hours.value * 60 + minutes.value) * 60 * 1000);
+    status.textContent = countdown.duration === 0 ? 'Pick a length above 0 to start.' : 'Ready when you are.';
   }
 
   function wheelsChanged() {
@@ -130,6 +203,7 @@ function createTimer(config, { onChange, onRemove, onTick }) {
   }
 
   function render() {
+    const { state, remaining, duration } = countdown;
     picker.hidden = state !== 'idle';
     running.hidden = state === 'idle';
     timeEl.textContent = format(remaining);
@@ -137,52 +211,27 @@ function createTimer(config, { onChange, onRemove, onTick }) {
     startBtn.disabled = state === 'running' || duration === 0;
     pauseBtn.disabled = state !== 'running';
     startBtn.textContent = { idle: 'Start', paused: 'Resume', done: 'Start again' }[state] ?? 'Start';
+    // Side timers are launched from a timer that is set but not started.
+    sideBtn.hidden = state !== 'idle';
+    sideBtn.disabled = sideFull || duration === 0;
+    sideBtn.textContent = sideFull ? `Side timers full (${MAX_SIDE_TIMERS} max)` : 'Side timer';
     onTick();
   }
 
-  function stopInterval() {
-    clearInterval(tick);
-    tick = null;
-  }
-
   function start() {
-    if (state === 'running' || duration === 0) return;
-    if (remaining <= 0) remaining = duration;
-    unlockAudio();
-    endsAt = Date.now() + remaining;
-    state = 'running';
-    tick = setInterval(() => {
-      remaining = endsAt - Date.now();
-      if (remaining <= 0) {
-        remaining = 0;
-        stopInterval();
-        state = 'done';
-        status.textContent = `${name()} complete. Take a short break!`;
-        playRing(getRing());
-        render();
-        startBtn.focus();
-        return;
-      }
-      render();
-    }, 250);
+    if (!countdown.start()) return;
     status.textContent = 'Focus time. Timer running.';
-    render();
     pauseBtn.focus();
   }
 
   function pause() {
-    if (state !== 'running') return;
-    remaining = endsAt - Date.now();
-    stopInterval();
-    state = 'paused';
+    countdown.pause();
     status.textContent = 'Paused.';
-    render();
     startBtn.focus();
   }
 
   function reset() {
-    stopInterval();
-    state = 'idle';
+    countdown.reset();
     updateFromWheels();
     render();
     sync();
@@ -202,6 +251,7 @@ function createTimer(config, { onChange, onRemove, onTick }) {
   pauseBtn.addEventListener('click', pause);
   resetBtn.addEventListener('click', reset);
   removeBtn.addEventListener('click', () => onRemove(api));
+  sideBtn.addEventListener('click', () => onSide({ name: name(), duration: countdown.duration }));
 
   updateLabels();
   updateFromWheels();
@@ -214,10 +264,89 @@ function createTimer(config, { onChange, onRemove, onTick }) {
     setRemovable: (removable) => {
       removeBtn.hidden = !removable;
     },
+    setSideFull: (full) => {
+      sideFull = full;
+      render();
+    },
     config: () => ({ name: nameInput.value, hours: hours.value, minutes: minutes.value }),
-    runningRemaining: () => (state === 'running' ? remaining : null),
+    runningRemaining: () => (countdown.state === 'running' ? countdown.remaining : null),
     destroy: () => {
-      stopInterval();
+      countdown.destroy();
+      el.remove();
+    },
+  };
+  return api;
+}
+
+// A compact timer in the dock on the right. Tap it to pause, reset, or remove.
+function createSideTimer({ name, duration }, { onRemove, onTick }) {
+  const id = nextId++;
+  const el = document.createElement('div');
+  el.className = 'side-timer';
+  el.innerHTML = `
+    <button type="button" class="side-timer-chip" aria-expanded="false" aria-controls="side-timer-${id}">
+      <span class="side-timer-name"></span>
+      <span class="side-timer-time"></span>
+      <span class="side-timer-bar" aria-hidden="true"><span></span></span>
+    </button>
+    <div class="side-timer-actions" id="side-timer-${id}" hidden>
+      <button type="button" class="btn btn-small side-timer-pause">Pause</button>
+      <button type="button" class="btn btn-small side-timer-reset">Reset</button>
+      <button type="button" class="btn btn-small side-timer-remove">✕</button>
+    </div>`;
+
+  const $ = (selector) => el.querySelector(selector);
+  const chip = $('.side-timer-chip');
+  const timeEl = $('.side-timer-time');
+  const bar = $('.side-timer-bar span');
+  const actions = $('.side-timer-actions');
+  const pauseBtn = $('.side-timer-pause');
+  const resetBtn = $('.side-timer-reset');
+  const removeBtn = $('.side-timer-remove');
+
+  $('.side-timer-name').textContent = name;
+  removeBtn.setAttribute('aria-label', `Remove side timer ${name}`);
+
+  const countdown = createCountdown({
+    onTick: render,
+    onDone: () => setOpen(true),
+  });
+  countdown.setDuration(duration);
+
+  function render() {
+    const { state, remaining } = countdown;
+    const done = state === 'done';
+    timeEl.textContent = done ? 'Done' : format(remaining);
+    bar.style.width = `${((duration - remaining) / duration) * 100}%`;
+    el.classList.toggle('is-done', done);
+    el.classList.toggle('is-paused', state === 'paused' || state === 'idle');
+    pauseBtn.textContent = state === 'running' ? 'Pause' : state === 'paused' ? 'Resume' : 'Start';
+    const label = { running: 'running', paused: 'paused', idle: 'ready', done: 'done' }[state];
+    chip.setAttribute('aria-label', `Side timer ${name}, ${done ? 'finished' : `${format(remaining)} left`}, ${label}`);
+    onTick();
+  }
+
+  function setOpen(open) {
+    actions.hidden = !open;
+    chip.setAttribute('aria-expanded', String(open));
+  }
+
+  chip.addEventListener('click', () => setOpen(actions.hidden));
+  pauseBtn.addEventListener('click', () => {
+    if (countdown.state === 'running') countdown.pause();
+    else countdown.start();
+  });
+  resetBtn.addEventListener('click', () => countdown.reset());
+  removeBtn.addEventListener('click', () => onRemove(api));
+
+  render();
+
+  const api = {
+    el,
+    start: () => countdown.start(),
+    runningRemaining: () => (countdown.state === 'running' ? countdown.remaining : null),
+    destroy: () => {
+      countdown.destroy();
       el.remove();
     },
   };
@@ -227,7 +356,9 @@ function createTimer(config, { onChange, onRemove, onTick }) {
 export function initTimers() {
   const list = document.getElementById('timer-list');
   const addBtn = document.getElementById('timer-add');
+  const dock = document.getElementById('side-timers');
   const timers = [];
+  const sideTimers = [];
 
   function persist() {
     save(KEYS.timers, timers.map((t) => t.config()));
@@ -235,7 +366,7 @@ export function initTimers() {
 
   // Show the soonest-finishing running timer in the browser tab title.
   function updateTitle() {
-    const left = timers.map((t) => t.runningRemaining()).filter((ms) => ms !== null);
+    const left = [...timers, ...sideTimers].map((t) => t.runningRemaining()).filter((ms) => ms !== null);
     document.title = left.length ? `${format(Math.min(...left))} · ${APP_TITLE}` : APP_TITLE;
   }
 
@@ -253,11 +384,34 @@ export function initTimers() {
     addBtn.focus();
   }
 
+  function updateSideFull() {
+    const full = sideTimers.length >= MAX_SIDE_TIMERS;
+    timers.forEach((t) => t.setSideFull(full));
+    document.body.classList.toggle('has-side-timers', sideTimers.length > 0);
+  }
+
+  function removeSide(side) {
+    side.destroy();
+    sideTimers.splice(sideTimers.indexOf(side), 1);
+    updateSideFull();
+    updateTitle();
+    (dock.querySelector('.side-timer-chip') ?? addBtn).focus();
+  }
+
+  function addSide(config) {
+    if (sideTimers.length >= MAX_SIDE_TIMERS || !config.duration) return;
+    const side = createSideTimer(config, { onRemove: removeSide, onTick: updateTitle });
+    sideTimers.push(side);
+    dock.append(side.el);
+    side.start();
+    updateSideFull();
+  }
+
   function add(config) {
-    const timer = createTimer(config, { onChange: persist, onRemove: remove, onTick: updateTitle });
+    const timer = createTimer(config, { onChange: persist, onRemove: remove, onTick: updateTitle, onSide: addSide });
     timers.push(timer);
     list.append(timer.el);
-    timer.render();
+    timer.setSideFull(sideTimers.length >= MAX_SIDE_TIMERS);
     timer.sync();
     updateRemovable();
     return timer;

@@ -861,6 +861,113 @@ input[type='number'] {
   }
 }
 
+/* Side timers: a small dock in the bottom-right corner */
+.side-timers {
+  position: fixed;
+  right: max(44px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.side-timer {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 172px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.side-timer-chip {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: 2px 8px;
+  padding: 8px 12px 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.side-timer-name {
+  overflow: hidden;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--muted);
+}
+
+.side-timer-time {
+  font-size: 1.1rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.side-timer.is-paused .side-timer-time {
+  color: var(--muted);
+}
+
+.side-timer.is-done {
+  border-color: var(--accent);
+}
+
+.side-timer.is-done .side-timer-time {
+  color: var(--accent);
+}
+
+.side-timer-bar {
+  grid-column: 1 / -1;
+  height: 4px;
+  margin: 6px -12px 0;
+  background: var(--surface-2);
+}
+
+.side-timer-bar span {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: var(--primary);
+}
+
+.side-timer-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 6px;
+  padding: 8px;
+  border-top: 1px solid var(--border);
+}
+
+.side-timer-actions[hidden] {
+  display: none;
+}
+
+.side-timer-actions .btn {
+  padding: 0 8px;
+}
+
+.timer-side {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.timer-side[hidden] {
+  display: none;
+}
+
+/* Leave room to scroll the page past the dock. */
+body.has-side-timers .site-footer {
+  padding-bottom: 300px;
+}
+
 /* Footer */
 .site-footer {
   padding-block: 8px 28px;
