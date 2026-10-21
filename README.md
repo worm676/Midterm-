@@ -6,7 +6,7 @@ A simple, responsive study planner built for a class midterm project.
 
 - **Study tasks**: add, edit, mark complete, and delete tasks
 - **Study timer**: iPhone-style scroll wheels for hours (0–12) and minutes (0–59), then start, pause/resume, and reset
-- **Background music**: open the **Music** tab on the left edge to play relaxing music: Lo-fi, Jazz, Criminal jazz, Classics (Bach's Prelude in C), Flute, or a Surprise style, with Play/Pause and volume. It is generated live in the browser (no audio files or streaming)
+- **Background music**: open the **Music** tab on the left edge to play relaxing music: Lo-fi, Jazz, Jazz drums, Criminal jazz, Classics (Bach's Prelude in C), Piano, Guitar, Flute, or a Surprise style, with Play/Pause and volume. It is generated live in the browser (no audio files or streaming)
 - **Ring sound**: a chime plays when a sprint finishes. Open the **Ring** tab on the right edge of the screen to pick Chime, Bell, Ding-dong, Marimba, Harp, Digital alarm, Cowbell, Piano, Flute, or Off, and preview it. Sounds are generated in the browser with the Web Audio API (no audio files)
 - **Study break art**: 20 landscape illustrations drawn in the browser as SVG. 10 classics always stay, and 10 new pieces (new styles and new layouts) appear every Monday, marked "New this week". Swipe, scroll, or use the arrow buttons/keys to browse; it changes on its own every 90 seconds (with a Pause button)
 - **Theme switcher**: Light, Dark, or System (follows your device setting)

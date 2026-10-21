@@ -140,6 +140,73 @@ function horn(c, midi, at, length, vol = 0.07) {
   }
 }
 
+function tom(c, at, freq, vol = 0.2) {
+  const osc = c.ac.createOscillator();
+  osc.frequency.setValueAtTime(freq, at);
+  osc.frequency.exponentialRampToValueAtTime(freq * 0.6, at + 0.25);
+  const g = envelope(c.ac, at, { attack: 0.003, peak: vol, release: 0.3 });
+  osc.connect(g).connect(c.out);
+  osc.start(at);
+  osc.stop(at + 0.35);
+}
+
+// A ride cymbal with a metallic "ping" on top of the wash.
+function jazzRide(c, at, vol = 0.05) {
+  noiseHit(c, at, { freq: 5500, decay: 0.45, vol });
+  for (const freq of [3150, 4630, 6210]) {
+    const osc = c.ac.createOscillator();
+    osc.type = 'square';
+    osc.frequency.value = freq;
+    const filter = c.ac.createBiquadFilter();
+    filter.type = 'highpass';
+    filter.frequency.value = 3000;
+    const g = envelope(c.ac, at, { attack: 0.002, peak: vol * 0.08, release: 0.5 });
+    osc.connect(filter).connect(g).connect(c.out);
+    osc.start(at);
+    osc.stop(at + 0.55);
+  }
+}
+
+// Plucked guitar string (Karplus-Strong), cached per note.
+const stringCache = new Map();
+
+function stringBuffer(ac, midi) {
+  const key = `${ac.sampleRate}:${midi}`;
+  if (stringCache.has(key)) return stringCache.get(key);
+  const sr = ac.sampleRate;
+  const buffer = ac.createBuffer(1, Math.floor(sr * 2.5), sr);
+  const data = buffer.getChannelData(0);
+  const period = Math.round(sr / mtof(midi));
+  // Start from softened noise for a warm, fingerpicked attack.
+  let prev = 0;
+  for (let i = 0; i < period; i++) {
+    prev = prev * 0.5 + (Math.random() * 2 - 1) * 0.5;
+    data[i] = prev;
+  }
+  const damping = 0.996 - Math.max(0, midi - 60) * 0.0004;
+  for (let i = period; i < data.length; i++) {
+    data[i] = damping * 0.5 * (data[i - period] + data[Math.max(0, i - period - 1)]);
+  }
+  stringCache.set(key, buffer);
+  return buffer;
+}
+
+function guitar(c, midi, at, vol = 0.22) {
+  const src = c.ac.createBufferSource();
+  src.buffer = stringBuffer(c.ac, midi);
+  const body = c.ac.createBiquadFilter();
+  body.type = 'peaking';
+  body.frequency.value = 220;
+  body.gain.value = 4;
+  const tone = c.ac.createBiquadFilter();
+  tone.type = 'lowpass';
+  tone.frequency.value = 3200;
+  const g = c.ac.createGain();
+  g.gain.value = vol;
+  src.connect(body).connect(tone).connect(g).connect(c.out);
+  src.start(at);
+}
+
 // ---------- Ambient layers (looping noise beds) ----------
 
 function vinyl(c) {
@@ -230,6 +297,24 @@ const D_PENTA = [74, 76, 78, 81, 83, 86, 88];
 
 const BOX_CHORDS = [[60, 64, 67, 71], [57, 60, 64, 67], [53, 57, 60, 64], [55, 59, 62, 64]];
 
+// Piano: vi-IV-I-V in C (Am, F, C, G). `third` is 3 for minor, 4 for major.
+const PIANO_CHORDS = [
+  { root: 45, third: 3, melody: [69, 72, 76, 79] },
+  { root: 41, third: 4, melody: [69, 72, 77, 79] },
+  { root: 48, third: 4, melody: [72, 74, 76, 79] },
+  { root: 43, third: 4, melody: [71, 74, 79, 81] },
+];
+
+// Guitar: open G, Em, C, D shapes (low string to high string).
+const GUITAR_CHORDS = [
+  [43, 47, 50, 55, 59, 67],
+  [40, 47, 52, 55, 59, 64],
+  [48, 52, 55, 60, 64],
+  [50, 57, 62, 66],
+];
+// Fingerpicking order over the strings, one per 8th note.
+const PICK_ORDER = [0, 3, 2, 4, 1, 3, 2, 5];
+
 function walkingBass(c, chord, next, beat, at, length, chromatic = false) {
   let midi;
   if (beat === 0) midi = chord.tones[0];
@@ -286,6 +371,37 @@ export const STYLES = [
     },
   },
   {
+    id: 'jazzdrums',
+    name: 'Jazz drums',
+    nowPlaying: 'Jazz drums & bass groove',
+    bpm: 120,
+    perBeat: 2,
+    swing: 0.66,
+    tone: 7000,
+    step(c, s, t, d) {
+      const bar = Math.floor(s / 8) % 4;
+      const pos = s % 8;
+      const chord = JAZZ[bar];
+      if (pos % 2 === 0) walkingBass(c, chord, JAZZ[(bar + 1) % 4], pos / 2, t, d * 2);
+      // Classic ride pattern: ding, ding-da, ding, ding-da.
+      if (pos % 2 === 0 || pos === 3 || pos === 7) jazzRide(c, t, pos % 2 === 0 ? 0.05 : 0.035);
+      // Hi-hat foot on 2 and 4, feathered kick on every beat.
+      if (pos === 2 || pos === 6) hat(c, t, 0.05);
+      if (pos % 2 === 0) kick(c, t, 0.12);
+      if (bar === 3 && pos >= 5) {
+        // A short fill into the next phrase: snare, then toms down.
+        if (pos === 5) snare(c, t, 0.1);
+        if (pos === 6) tom(c, t, 190);
+        if (pos === 7) {
+          tom(c, t, 140);
+          tom(c, t + d * 0.5, 105);
+        }
+      } else if (pos % 2 === 1 && chance(0.25)) {
+        snare(c, t, chance(0.2) ? 0.09 : 0.04);
+      }
+    },
+  },
+  {
     id: 'noir',
     name: 'Criminal jazz',
     nowPlaying: 'Criminal jazz (noir detective)',
@@ -327,6 +443,42 @@ export const STYLES = [
       const idx = BACH_ORDER[pos % 8];
       const length = idx === 0 ? d * 8 : idx === 1 ? d * 7 : d * 1.6;
       piano(c.ac, c.out, mtof(chord[idx]), t, length, idx < 2 ? 0.15 : 0.11);
+    },
+  },
+  {
+    id: 'piano',
+    name: 'Piano',
+    nowPlaying: 'Solo piano',
+    bpm: 70,
+    perBeat: 2,
+    swing: 0.5,
+    tone: 6000,
+    step(c, s, t, d) {
+      const pos = s % 8;
+      const { root, third, melody } = PIANO_CHORDS[Math.floor(s / 8) % 4];
+      const arpeggio = [root, root + 7, root + 12, root + 12 + third, root + 19, root + 12 + third, root + 12, root + 7];
+      piano(c.ac, c.out, mtof(arpeggio[pos]), t, d * 4, 0.11);
+      if (pos === 0) piano(c.ac, c.out, mtof(pick(melody)), t, d * 6, 0.16);
+      else if ((pos === 3 || pos === 4 || pos === 6) && chance(0.35)) {
+        piano(c.ac, c.out, mtof(pick(melody) + pick([0, 0, 2])), t, d * 3, 0.13);
+      }
+    },
+  },
+  {
+    id: 'guitar',
+    name: 'Guitar',
+    nowPlaying: 'Acoustic guitar',
+    bpm: 76,
+    perBeat: 2,
+    swing: 0.5,
+    tone: 5000,
+    step(c, s, t, d) {
+      const chord = GUITAR_CHORDS[Math.floor(s / 8) % 4];
+      const pos = s % 8;
+      const idx = Math.min(PICK_ORDER[pos], chord.length - 1);
+      guitar(c, chord[idx], t + Math.random() * 0.01, idx === 0 ? 0.34 : 0.26);
+      // Now and then, a little hammer-on above the top string.
+      if (pos === 7 && chance(0.3)) guitar(c, chord[chord.length - 1] + 2, t + d * 0.5, 0.18);
     },
   },
   {
