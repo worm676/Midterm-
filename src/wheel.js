@@ -70,7 +70,11 @@ export function createWheel(el, { values, format, describe, initial, onChange })
   el.addEventListener('scroll', () => {
     requestPaint();
     clearTimeout(settleTimer);
-    settleTimer = setTimeout(() => commit(clamp(Math.round(el.scrollTop / ITEM_HEIGHT))), 120);
+    settleTimer = setTimeout(() => {
+      // Hiding the wheel resets its scroll position; that is not a user choice.
+      if (el.clientHeight === 0) return;
+      commit(clamp(Math.round(el.scrollTop / ITEM_HEIGHT)));
+    }, 120);
   });
 
   el.addEventListener('keydown', (e) => {

@@ -4,16 +4,41 @@ function makeId() {
   return globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
+const MAX_MINUTES = 999;
+
+// Optional time estimate: a whole number of minutes, or null when left blank.
+function parseMinutes(value) {
+  if (value === null || value === undefined || String(value).trim() === '') return null;
+  const n = Number(value);
+  return Number.isInteger(n) && n >= 1 && n <= MAX_MINUTES ? n : NaN;
+}
+
+function formatMinutes(total) {
+  const h = Math.floor(total / 60);
+  const m = total % 60;
+  if (!h) return `${m} min`;
+  return m ? `${h} h ${m} min` : `${h} h`;
+}
+
 function sanitize(list) {
   if (!Array.isArray(list)) return [];
   return list
     .filter((t) => t && typeof t.title === 'string' && t.title.trim())
-    .map((t) => ({ id: String(t.id ?? makeId()), title: t.title.trim(), done: Boolean(t.done) }));
+    .map((t) => {
+      const minutes = parseMinutes(t.minutes);
+      return {
+        id: String(t.id ?? makeId()),
+        title: t.title.trim(),
+        done: Boolean(t.done),
+        minutes: Number.isNaN(minutes) ? null : minutes,
+      };
+    });
 }
 
 export function initTasks() {
   const form = document.getElementById('task-form');
   const input = document.getElementById('task-input');
+  const minutesInput = document.getElementById('task-minutes');
   const error = document.getElementById('task-error');
   const list = document.getElementById('task-list');
   const empty = document.getElementById('task-empty');
@@ -51,8 +76,20 @@ export function initTasks() {
     });
 
     const text = document.createElement('span');
-    text.className = 'task-title';
-    text.textContent = task.title;
+    text.className = 'task-text';
+    const title = document.createElement('span');
+    title.className = 'task-title';
+    title.textContent = task.title;
+    text.append(title);
+    if (task.minutes) {
+      const time = document.createElement('span');
+      time.className = 'task-time';
+      const hint = document.createElement('span');
+      hint.className = 'visually-hidden';
+      hint.textContent = 'Time needed: ';
+      time.append(hint, formatMinutes(task.minutes));
+      text.append(time);
+    }
 
     label.append(box, text);
 
@@ -113,6 +150,23 @@ export function initTasks() {
     field.required = true;
     field.value = task.title;
 
+    const minutesId = `edit-minutes-${task.id}`;
+    const minutesLabel = document.createElement('label');
+    minutesLabel.className = 'visually-hidden';
+    minutesLabel.htmlFor = minutesId;
+    minutesLabel.textContent = 'Time needed in minutes (optional)';
+
+    const minutesField = document.createElement('input');
+    minutesField.type = 'number';
+    minutesField.id = minutesId;
+    minutesField.className = 'edit-minutes';
+    minutesField.inputMode = 'numeric';
+    minutesField.min = '1';
+    minutesField.max = String(MAX_MINUTES);
+    minutesField.step = '1';
+    minutesField.placeholder = 'min';
+    minutesField.value = task.minutes ?? '';
+
     const saveBtn = document.createElement('button');
     saveBtn.type = 'submit';
     saveBtn.className = 'btn btn-small btn-primary';
@@ -136,20 +190,28 @@ export function initTasks() {
         field.focus();
         return;
       }
+      const minutes = parseMinutes(minutesField.value);
+      if (Number.isNaN(minutes)) {
+        minutesField.focus();
+        return;
+      }
       task.title = value;
+      task.minutes = minutes;
       persist();
       close();
     });
     cancelBtn.addEventListener('click', close);
-    field.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') close();
-    });
+    [field, minutesField].forEach((el) =>
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') close();
+      }),
+    );
 
     const actions = document.createElement('div');
     actions.className = 'task-actions';
     actions.append(saveBtn, cancelBtn);
 
-    editForm.append(label, field, actions);
+    editForm.append(label, field, minutesLabel, minutesField, actions);
     li.append(editForm);
     return li;
   }
@@ -161,7 +223,10 @@ export function initTasks() {
     const done = tasks.filter((t) => t.done).length;
     empty.hidden = tasks.length > 0;
     list.hidden = tasks.length === 0;
-    summary.textContent = tasks.length ? `${done} of ${tasks.length} done` : '';
+    const minutesLeft = tasks.reduce((sum, t) => sum + (t.done ? 0 : t.minutes ?? 0), 0);
+    summary.textContent = tasks.length
+      ? `${done} of ${tasks.length} done${minutesLeft ? ` · ${formatMinutes(minutesLeft)} left` : ''}`
+      : '';
   }
 
   form.addEventListener('submit', (e) => {
@@ -172,17 +237,26 @@ export function initTasks() {
       input.focus();
       return;
     }
+    const minutes = parseMinutes(minutesInput.value);
+    if (Number.isNaN(minutes)) {
+      error.textContent = `Time needed must be a whole number of minutes from 1 to ${MAX_MINUTES}, or left blank.`;
+      minutesInput.focus();
+      return;
+    }
     error.textContent = '';
-    tasks.push({ id: makeId(), title, done: false });
+    tasks.push({ id: makeId(), title, done: false, minutes });
     persist();
     input.value = '';
+    minutesInput.value = '';
     render();
     input.focus();
   });
 
-  input.addEventListener('input', () => {
-    error.textContent = '';
-  });
+  [input, minutesInput].forEach((el) =>
+    el.addEventListener('input', () => {
+      error.textContent = '';
+    }),
+  );
 
   render();
 }

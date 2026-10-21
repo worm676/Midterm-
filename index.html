@@ -74,6 +74,13 @@
               />
               <button type="submit" class="btn btn-primary">Add task</button>
             </div>
+            <div class="estimate-row">
+              <label for="task-minutes">Time needed <span class="optional">(optional)</span></label>
+              <div class="estimate-input">
+                <input id="task-minutes" name="minutes" type="number" inputmode="numeric" min="1" max="999" step="1" placeholder="e.g. 30" />
+                <span class="muted" aria-hidden="true">min</span>
+              </div>
+            </div>
             <p class="error" id="task-error" role="alert"></p>
           </form>
 
@@ -105,41 +112,14 @@
       </div>
 
       <div class="col col-right">
-        <!-- Timer -->
+        <!-- Timers -->
         <section class="card timer-card" aria-labelledby="timer-heading">
           <div class="card-head">
-            <h2 id="timer-heading">Study timer</h2>
+            <h2 id="timer-heading">Study timers</h2>
+            <button type="button" class="btn btn-small" id="timer-add">+ Add timer</button>
           </div>
-
-          <div class="timer-picker" id="timer-picker" role="group" aria-labelledby="timer-length-label">
-            <p class="picker-label" id="timer-length-label">Sprint length</p>
-            <p class="picker-hint muted">Scroll, swipe, or use the arrow keys.</p>
-            <div class="wheels">
-              <div class="picker-band" aria-hidden="true"></div>
-              <div class="wheel-group">
-                <div class="wheel" id="wheel-hours" tabindex="0" role="spinbutton" aria-label="Hours"></div>
-                <span class="wheel-unit" aria-hidden="true">hours</span>
-              </div>
-              <div class="wheel-group">
-                <div class="wheel" id="wheel-minutes" tabindex="0" role="spinbutton" aria-label="Minutes"></div>
-                <span class="wheel-unit" aria-hidden="true">min</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="timer-running" id="timer-running" hidden>
-            <div class="timer-display" role="timer" aria-labelledby="timer-heading">
-              <span id="timer-time">25:00</span>
-            </div>
-            <div class="progress" aria-hidden="true"><span id="timer-bar"></span></div>
-          </div>
-          <p id="timer-status" class="muted center" aria-live="polite">Ready when you are.</p>
-
-          <div class="timer-controls">
-            <button type="button" id="timer-start" class="btn btn-primary">Start</button>
-            <button type="button" id="timer-pause" class="btn" disabled>Pause</button>
-            <button type="button" id="timer-reset" class="btn">Reset</button>
-          </div>
+          <p class="picker-hint muted">Set a length by scrolling, swiping, or using the arrow keys.</p>
+          <div id="timer-list" class="timer-list"></div>
         </section>
 
         <!-- Improvement waves -->

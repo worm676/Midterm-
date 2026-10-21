@@ -5,6 +5,7 @@ export const KEYS = {
   waves: 'ssp.waves',
   theme: 'ssp.theme',
   ring: 'ssp.ring',
+  timers: 'ssp.timers',
   music: 'ssp.music',
   musicVolume: 'ssp.musicVolume',
 };

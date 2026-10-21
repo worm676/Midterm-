@@ -334,6 +334,62 @@ input[type='checkbox'] {
   min-width: 0;
 }
 
+.estimate-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  margin-top: 10px;
+}
+
+.task-form .estimate-row label {
+  margin-bottom: 0;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.optional {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.estimate-input {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+input[type='number'] {
+  width: 96px;
+  min-height: 44px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  font-size: 16px;
+}
+
+.task-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.task-time {
+  align-self: flex-start;
+  margin-top: 2px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.edit-form .edit-minutes {
+  flex: 0 0 96px;
+}
+
 .error {
   color: var(--danger);
   font-size: 0.9rem;
@@ -410,6 +466,28 @@ input[type='checkbox'] {
 /* Timer */
 .picker-label {
   font-weight: 600;
+}
+
+.timer + .timer {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
+
+.timer-top {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.timer-name {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+}
+
+.timer-remove[hidden] {
+  display: none;
 }
 
 .picker-hint {
@@ -496,7 +574,7 @@ input[type='checkbox'] {
   transform-origin: center right;
 }
 
-#timer-status {
+.timer-status {
   margin-top: 10px;
 }
 
