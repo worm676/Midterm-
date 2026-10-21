@@ -1048,7 +1048,8 @@ body.has-side-timers .site-footer {
 .stoody {
   position: absolute;
   top: calc(100% - 1px);
-  left: 62%;
+  /* Where on the line Stoody hangs; changes after each flight. */
+  left: clamp(56px, var(--stoody-x, 62%), calc(100% - 56px));
   z-index: 12;
   width: 48px;
   margin-left: -24px;

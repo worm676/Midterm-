@@ -8,6 +8,8 @@ const AWAY_MS = 4000;
 const FLIP_MS = 900;
 const SNORE_MS = 5000;
 const HEAD_SPIN_MS = 1400;
+// Spots along the line (percent of the header width) Stoody can land on.
+const SPOTS = [14, 28, 42, 56, 70, 84];
 
 const OWL_SVG = `
 <svg viewBox="0 0 64 84" width="48" height="63" aria-hidden="true" focusable="false">
@@ -72,6 +74,14 @@ export function initStoody() {
 
   let perched = false;
   let busy = false;
+  let spot = 62;
+
+  // Land somewhere new, never the spot Stoody just left.
+  function moveToNewSpot() {
+    const choices = SPOTS.filter((s) => s !== spot);
+    spot = choices[Math.floor(Math.random() * choices.length)];
+    wrap.style.setProperty('--stoody-x', `${spot}%`);
+  }
 
   const wait = (ms) => new Promise((resolve) => setTimeout(resolve, reducedMotion.matches ? Math.min(ms, 300) : ms));
 
@@ -95,7 +105,8 @@ export function initStoody() {
     await play('is-flying-away', FLY_AWAY_MS);
     wrap.classList.add('is-away');
     await wait(AWAY_MS);
-    // Always come back to hanging from the line.
+    // Always come back to hanging from the line, at a new spot.
+    moveToNewSpot();
     perched = false;
     wrap.classList.remove('is-away', 'is-perched');
     wrap.classList.add('is-hanging');
