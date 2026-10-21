@@ -6,11 +6,12 @@ A simple, responsive study planner built for a class midterm project.
 
 - **Study tasks**: add, edit, mark complete, and delete tasks
 - **Study timer**: iPhone-style scroll wheels for hours (0–12) and minutes (0–59), then start, pause/resume, and reset
+- **Background music**: open the **Music** tab on the left edge to play relaxing music: Lo-fi, Jazz, Criminal jazz, Classics (Bach's Prelude in C), Flute, or a Surprise style, with Play/Pause and volume. It is generated live in the browser (no audio files or streaming)
 - **Ring sound**: a chime plays when a sprint finishes. Open the **Ring** tab on the right edge of the screen to pick Chime, Bell, Ding-dong, Marimba, Harp, Digital alarm, Cowbell, Piano, Flute, or Off, and preview it. Sounds are generated in the browser with the Web Audio API (no audio files)
 - **Study break art**: 20 landscape illustrations drawn in the browser as SVG. 10 classics always stay, and 10 new pieces (new styles and new layouts) appear every Monday, marked "New this week". Swipe, scroll, or use the arrow buttons/keys to browse; it changes on its own every 90 seconds (with a Pause button)
 - **Theme switcher**: Light, Dark, or System (follows your device setting)
 - **Next 4 Improvement Waves**: a four-item checklist with a progress bar
-- **Saves automatically**: tasks, checklist progress, theme, and ring choice are stored in `localStorage`, so they survive a refresh
+- **Saves automatically**: tasks, checklist progress, theme, ring choice, and music choice/volume are stored in `localStorage`, so they survive a refresh
 - **Responsive and accessible**: works at iPhone 16 Pro Max width (440px), has 44px touch targets, labelled controls, visible focus rings, a skip link, and full keyboard support (Enter saves an edit, Escape cancels it)
 
 No login, database, or external API. All data stays in the browser.
@@ -64,6 +65,8 @@ src/art.js        Study break art carousel
 src/artGen.js     Weekly artwork generator (SVG)
 src/sound.js      Synthesized ring sounds
 src/ringMenu.js   Ring picker tab
+src/music.js      Generated background music
+src/musicMenu.js  Music picker tab
 src/waves.js      "Next 4 Improvement Waves" checklist
 src/storage.js    Safe localStorage helpers
 src/style.css     Styles

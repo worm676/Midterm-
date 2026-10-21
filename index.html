@@ -154,21 +154,41 @@
       </div>
     </main>
 
-    <div class="ring-menu" id="ring-menu">
-      <button type="button" class="ring-tab" id="ring-tab" aria-expanded="false" aria-controls="ring-panel">
+    <div class="side-menu side-menu-left" id="music-menu">
+      <button type="button" class="side-tab" id="music-tab" aria-expanded="false" aria-controls="music-panel">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+          <path
+            d="M19 3.5v11.25a3.25 3.25 0 1 1-2-3V7.6l-8 1.6v7.55a3.25 3.25 0 1 1-2-3V6.5a1 1 0 0 1 .8-.98l10-2A1 1 0 0 1 19 3.5Z"
+            fill="currentColor"
+          />
+        </svg>
+        <span class="side-tab-label">Music</span>
+      </button>
+      <div class="side-panel" id="music-panel" role="group" aria-labelledby="music-label" hidden>
+        <label id="music-label" for="music-select">Background music</label>
+        <select id="music-select"></select>
+        <button type="button" class="btn btn-small btn-primary" id="music-toggle">Play</button>
+        <label for="music-volume" class="volume-label">Volume</label>
+        <input type="range" id="music-volume" min="0" max="100" step="1" value="50" />
+        <p class="muted side-note" id="music-status" aria-live="polite"></p>
+      </div>
+    </div>
+
+    <div class="side-menu side-menu-right" id="ring-menu">
+      <button type="button" class="side-tab" id="ring-tab" aria-expanded="false" aria-controls="ring-panel">
         <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
           <path
             d="M12 3a6 6 0 0 0-6 6v3.6L4.3 15.5A1 1 0 0 0 5.2 17h13.6a1 1 0 0 0 .9-1.5L18 12.6V9a6 6 0 0 0-6-6Zm-2.5 15a2.5 2.5 0 0 0 5 0Z"
             fill="currentColor"
           />
         </svg>
-        <span class="ring-tab-label">Ring</span>
+        <span class="side-tab-label">Ring</span>
       </button>
-      <div class="ring-panel" id="ring-panel" role="group" aria-labelledby="ring-label" hidden>
+      <div class="side-panel" id="ring-panel" role="group" aria-labelledby="ring-label" hidden>
         <label id="ring-label" for="ring-select">Timer ring</label>
         <select id="ring-select"></select>
         <button type="button" class="btn btn-small" id="ring-preview">Preview</button>
-        <p class="muted ring-note">Plays once when a sprint finishes.</p>
+        <p class="muted side-note">Plays once when a sprint finishes.</p>
       </div>
     </div>
 

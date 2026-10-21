@@ -5,6 +5,8 @@ export const KEYS = {
   waves: 'ssp.waves',
   theme: 'ssp.theme',
   ring: 'ssp.ring',
+  music: 'ssp.music',
+  musicVolume: 'ssp.musicVolume',
 };
 
 export function load(key, fallback) {

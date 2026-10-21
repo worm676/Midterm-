@@ -13,7 +13,7 @@ export function unlockAudio() {
 }
 
 // One decaying note. `partials` are [frequency multiple, relative volume] pairs.
-function note(ac, out, { freq, at, length = 1, type = 'sine', volume = 0.3, partials = [[1, 1]] }) {
+export function note(ac, out, { freq, at, length = 1, type = 'sine', volume = 0.3, partials = [[1, 1]] }) {
   for (const [mult, level] of partials) {
     const osc = ac.createOscillator();
     const gain = ac.createGain();
@@ -51,7 +51,7 @@ function cowbell(ac, out, at, pitch = 1, volume = 0.35) {
 }
 
 // Piano-like tone: a bright hammer attack that mellows as it decays.
-function piano(ac, out, freq, at, length = 1.6, volume = 0.22) {
+export function piano(ac, out, freq, at, length = 1.6, volume = 0.22) {
   const filter = ac.createBiquadFilter();
   filter.type = 'lowpass';
   filter.frequency.setValueAtTime(freq * 8, at);
@@ -74,7 +74,7 @@ function piano(ac, out, freq, at, length = 1.6, volume = 0.22) {
 }
 
 // Flute-like tone: soft attack, gentle vibrato, and a little breath noise.
-function flute(ac, out, freq, at, length = 0.5, volume = 0.18) {
+export function flute(ac, out, freq, at, length = 0.5, volume = 0.18) {
   const end = at + length;
   const osc = ac.createOscillator();
   const gain = ac.createGain();

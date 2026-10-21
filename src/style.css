@@ -649,16 +649,23 @@ input[type='checkbox'] {
   min-width: 76px;
 }
 
-/* Ring sound tab, pinned to the right edge of the screen */
-.ring-menu {
+/* Side tabs: Music on the left edge, Ring on the right edge */
+.side-menu {
   position: fixed;
-  right: 0;
   top: 50%;
   z-index: 20;
   transform: translateY(-50%);
 }
 
-.ring-tab {
+.side-menu-left {
+  left: 0;
+}
+
+.side-menu-right {
+  right: 0;
+}
+
+.side-tab {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -666,33 +673,53 @@ input[type='checkbox'] {
   width: 34px;
   padding: 12px 0;
   border: 1px solid var(--border);
-  border-right: 0;
-  border-radius: 12px 0 0 12px;
   background: var(--primary);
   color: var(--primary-text);
   box-shadow: var(--shadow);
   cursor: pointer;
 }
 
-.ring-tab-label {
+.side-menu-right .side-tab {
+  border-right: 0;
+  border-radius: 12px 0 0 12px;
+}
+
+.side-menu-left .side-tab {
+  border-left: 0;
+  border-radius: 0 12px 12px 0;
+}
+
+.side-tab-label {
   writing-mode: vertical-rl;
   font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.06em;
 }
 
-.ring-tab[aria-expanded='true'] {
+.side-menu-left .side-tab-label {
+  transform: rotate(180deg);
+}
+
+.side-tab[aria-expanded='true'] {
   background: var(--primary-hover);
 }
 
-.ring-panel {
+/* A red dot on the Music tab while music is playing */
+.side-tab.is-playing::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.side-panel {
   position: absolute;
   top: 50%;
-  right: calc(100% + 8px);
   transform: translateY(-50%);
   display: grid;
   gap: 8px;
-  width: 220px;
+  width: 230px;
   padding: 14px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -700,23 +727,55 @@ input[type='checkbox'] {
   box-shadow: var(--shadow);
 }
 
-.ring-panel[hidden] {
+.side-menu-right .side-panel {
+  right: calc(100% + 8px);
+}
+
+.side-menu-left .side-panel {
+  left: calc(100% + 8px);
+}
+
+.side-panel[hidden] {
   display: none;
 }
 
-.ring-panel label {
+.side-panel label {
   font-weight: 600;
 }
 
-.ring-note {
+.side-panel .volume-label {
+  margin-top: 4px;
+  font-size: 0.9rem;
+}
+
+.side-panel input[type='range'] {
+  width: 100%;
+  min-height: 32px;
+  accent-color: var(--primary);
+}
+
+.side-note {
   font-size: 0.8rem;
 }
 
-/* Keep page content clear of the tab when there is no side margin. */
+/* Keep page content clear of the side tabs when there is no side margin. */
 @media (max-width: 1180px) {
   .layout,
   .site-footer {
+    padding-left: max(46px, env(safe-area-inset-left));
     padding-right: max(46px, env(safe-area-inset-right));
+  }
+}
+
+@media (max-width: 600px) {
+  .side-tab {
+    width: 30px;
+  }
+
+  .layout,
+  .site-footer {
+    padding-left: max(38px, env(safe-area-inset-left));
+    padding-right: max(38px, env(safe-area-inset-right));
   }
 }
 
