@@ -391,10 +391,111 @@ input[type='checkbox'] {
 }
 
 /* Timer */
-.timer-length label {
-  display: block;
+.picker-label {
   font-weight: 600;
-  margin-bottom: 6px;
+}
+
+.picker-hint {
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+}
+
+.wheels {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  height: 220px;
+  padding: 0 8px;
+  border-radius: 12px;
+  background: var(--surface-2);
+}
+
+/* The highlighted selection row behind the centre item, like iOS. */
+.picker-band {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  top: 88px;
+  height: 44px;
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--border);
+  pointer-events: none;
+}
+
+.wheel-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  max-width: 160px;
+}
+
+.wheel {
+  position: relative;
+  flex: 1;
+  height: 220px;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  perspective: 600px;
+  -webkit-mask-image: linear-gradient(transparent, #000 30%, #000 70%, transparent);
+  mask-image: linear-gradient(transparent, #000 30%, #000 70%, transparent);
+  border-radius: 10px;
+  cursor: grab;
+  touch-action: pan-y;
+}
+
+.wheel::-webkit-scrollbar {
+  display: none;
+}
+
+.wheel:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.wheel-list {
+  list-style: none;
+  margin: 0;
+  /* Two empty rows above and below so the first and last values can centre. */
+  padding: 88px 0;
+}
+
+.wheel-item {
+  height: 44px;
+  line-height: 44px;
+  padding-right: 60px;
+  text-align: right;
+  font-size: 1.5rem;
+  font-variant-numeric: tabular-nums;
+  scroll-snap-align: center;
+  user-select: none;
+  color: var(--muted);
+  transform-origin: center right;
+}
+
+#timer-status {
+  margin-top: 10px;
+}
+
+.wheel-item.is-selected {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.wheel-unit {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 46px;
+  font-weight: 600;
+  pointer-events: none;
 }
 
 .timer-display {

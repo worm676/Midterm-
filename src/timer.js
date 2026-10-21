@@ -1,28 +1,31 @@
-function format(ms) {
-  const total = Math.max(0, Math.ceil(ms / 1000));
-  const m = String(Math.floor(total / 60)).padStart(2, '0');
-  const s = String(total % 60).padStart(2, '0');
-  return `${m}:${s}`;
-}
+import { createWheel } from './wheel.js';
 
-const MIN_MINUTES = 5;
-const MAX_MINUTES = 120;
-const STEP_MINUTES = 5;
+const MAX_HOURS = 12;
+const MINUTE_STEP = 5;
+const DEFAULT_HOURS = 0;
 const DEFAULT_MINUTES = 25;
 
-function fillLengthOptions(select) {
-  const options = [];
-  for (let m = MIN_MINUTES; m <= MAX_MINUTES; m += STEP_MINUTES) {
-    const option = new Option(`${m} minutes`, String(m));
-    option.selected = m === DEFAULT_MINUTES;
-    options.push(option);
-  }
-  select.replaceChildren(...options);
+function range(start, end, step = 1) {
+  const out = [];
+  for (let n = start; n <= end; n += step) out.push(n);
+  return out;
+}
+
+function format(ms) {
+  const total = Math.max(0, Math.ceil(ms / 1000));
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = String(total % 60).padStart(2, '0');
+  return h > 0 ? `${h}:${String(m).padStart(2, '0')}:${s}` : `${String(m).padStart(2, '0')}:${s}`;
+}
+
+function plural(n, word) {
+  return `${n} ${word}${n === 1 ? '' : 's'}`;
 }
 
 export function initTimer() {
-  const select = document.getElementById('timer-minutes');
-  fillLengthOptions(select);
+  const picker = document.getElementById('timer-picker');
+  const running = document.getElementById('timer-running');
   const timeEl = document.getElementById('timer-time');
   const bar = document.getElementById('timer-bar');
   const status = document.getElementById('timer-status');
@@ -30,21 +33,44 @@ export function initTimer() {
   const pauseBtn = document.getElementById('timer-pause');
   const resetBtn = document.getElementById('timer-reset');
 
-  let duration = Number(select.value) * 60 * 1000;
-  let remaining = duration;
+  let duration = 0;
+  let remaining = 0;
   let endsAt = 0;
   let tick = null;
+  // "idle" shows the wheels; any other state shows the countdown.
+  let state = 'idle';
 
-  function render() {
-    timeEl.textContent = format(remaining);
-    bar.style.width = `${((duration - remaining) / duration) * 100}%`;
-    document.title = tick ? `${format(remaining)} · Study Sprint Planner` : 'Study Sprint Planner';
+  const hours = createWheel(document.getElementById('wheel-hours'), {
+    values: range(0, MAX_HOURS),
+    format: String,
+    describe: (n) => plural(n, 'hour'),
+    initial: DEFAULT_HOURS,
+    onChange: updateFromWheels,
+  });
+  const minutes = createWheel(document.getElementById('wheel-minutes'), {
+    values: range(0, 60 - MINUTE_STEP, MINUTE_STEP),
+    format: (n) => String(n).padStart(2, '0'),
+    describe: (n) => plural(n, 'minute'),
+    initial: DEFAULT_MINUTES,
+    onChange: updateFromWheels,
+  });
+
+  function updateFromWheels() {
+    duration = (hours.value * 60 + minutes.value) * 60 * 1000;
+    remaining = duration;
+    startBtn.disabled = duration === 0;
+    status.textContent = duration === 0 ? 'Pick a length above 0 to start.' : 'Ready when you are.';
   }
 
-  function setRunning(running) {
-    startBtn.disabled = running;
-    pauseBtn.disabled = !running;
-    select.disabled = running;
+  function render() {
+    picker.hidden = state !== 'idle';
+    running.hidden = state === 'idle';
+    timeEl.textContent = format(remaining);
+    bar.style.width = duration ? `${((duration - remaining) / duration) * 100}%` : '0';
+    document.title = state === 'running' ? `${format(remaining)} · Study Sprint Planner` : 'Study Sprint Planner';
+    startBtn.disabled = state === 'running' || duration === 0;
+    pauseBtn.disabled = state !== 'running';
+    startBtn.textContent = { idle: 'Start', paused: 'Resume', done: 'Start again' }[state] ?? 'Start';
   }
 
   function stopInterval() {
@@ -53,33 +79,33 @@ export function initTimer() {
   }
 
   function start() {
-    if (tick) return;
+    if (state === 'running' || duration === 0) return;
     if (remaining <= 0) remaining = duration;
     endsAt = Date.now() + remaining;
+    state = 'running';
     tick = setInterval(() => {
       remaining = endsAt - Date.now();
       if (remaining <= 0) {
         remaining = 0;
         stopInterval();
-        setRunning(false);
-        startBtn.textContent = 'Start again';
+        state = 'done';
         status.textContent = 'Sprint complete. Take a short break!';
+        render();
         startBtn.focus();
+        return;
       }
       render();
     }, 250);
-    setRunning(true);
     status.textContent = 'Focus time. Timer running.';
     render();
     pauseBtn.focus();
   }
 
   function pause() {
-    if (!tick) return;
+    if (state !== 'running') return;
     remaining = endsAt - Date.now();
     stopInterval();
-    setRunning(false);
-    startBtn.textContent = 'Resume';
+    state = 'paused';
     status.textContent = 'Paused.';
     render();
     startBtn.focus();
@@ -87,20 +113,20 @@ export function initTimer() {
 
   function reset() {
     stopInterval();
-    remaining = duration;
-    setRunning(false);
-    startBtn.textContent = 'Start';
-    status.textContent = 'Ready when you are.';
+    state = 'idle';
+    updateFromWheels();
     render();
+    // Hidden scroll areas lose their position, so restore the wheels.
+    hours.sync();
+    minutes.sync();
   }
 
-  select.addEventListener('change', () => {
-    duration = Number(select.value) * 60 * 1000;
-    reset();
-  });
   startBtn.addEventListener('click', start);
   pauseBtn.addEventListener('click', pause);
   resetBtn.addEventListener('click', reset);
 
+  updateFromWheels();
   render();
+  hours.sync();
+  minutes.sync();
 }

@@ -86,18 +86,28 @@
           <h2 id="timer-heading">Study timer</h2>
         </div>
 
-        <div class="timer-length">
-          <label for="timer-minutes">Sprint length</label>
-          <select id="timer-minutes">
-            <!-- Options from 5 to 120 minutes are added by src/timer.js -->
-            <option value="25" selected>25 minutes</option>
-          </select>
+        <div class="timer-picker" id="timer-picker" role="group" aria-labelledby="timer-length-label">
+          <p class="picker-label" id="timer-length-label">Sprint length</p>
+          <p class="picker-hint muted">Scroll, swipe, or use the arrow keys.</p>
+          <div class="wheels">
+            <div class="picker-band" aria-hidden="true"></div>
+            <div class="wheel-group">
+              <div class="wheel" id="wheel-hours" tabindex="0" role="spinbutton" aria-label="Hours"></div>
+              <span class="wheel-unit" aria-hidden="true">hours</span>
+            </div>
+            <div class="wheel-group">
+              <div class="wheel" id="wheel-minutes" tabindex="0" role="spinbutton" aria-label="Minutes"></div>
+              <span class="wheel-unit" aria-hidden="true">min</span>
+            </div>
+          </div>
         </div>
 
-        <div class="timer-display" role="timer" aria-labelledby="timer-heading">
-          <span id="timer-time">25:00</span>
+        <div class="timer-running" id="timer-running" hidden>
+          <div class="timer-display" role="timer" aria-labelledby="timer-heading">
+            <span id="timer-time">25:00</span>
+          </div>
+          <div class="progress" aria-hidden="true"><span id="timer-bar"></span></div>
         </div>
-        <div class="progress" aria-hidden="true"><span id="timer-bar"></span></div>
         <p id="timer-status" class="muted center" aria-live="polite">Ready when you are.</p>
 
         <div class="timer-controls">
