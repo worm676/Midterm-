@@ -1,5 +1,5 @@
 import { createWheel } from './wheel.js';
-import { playRing, unlockAudio } from './sound.js';
+import { RINGS, playRing, unlockAudio } from './sound.js';
 import { getRing } from './ringMenu.js';
 import { KEYS, load, save } from './storage.js';
 
@@ -37,7 +37,7 @@ function clampInt(value, min, max, fallback) {
 
 // Countdown state machine shared by regular and side timers.
 // States: "idle" (not started), "running", "paused", "done".
-function createCountdown({ onTick, onDone }) {
+function createCountdown({ onTick, onDone, ring = getRing }) {
   let duration = 0;
   let remaining = 0;
   let endsAt = 0;
@@ -77,7 +77,7 @@ function createCountdown({ onTick, onDone }) {
           remaining = 0;
           stop();
           state = 'done';
-          playRing(getRing());
+          playRing(ring());
           onDone();
         }
         onTick();
@@ -284,11 +284,25 @@ function createSideTimer({ name, duration }, { onRemove, onTick }) {
   const el = document.createElement('div');
   el.className = 'side-timer';
   el.innerHTML = `
-    <button type="button" class="side-timer-chip" aria-expanded="false" aria-controls="side-timer-${id}">
-      <span class="side-timer-name"></span>
-      <span class="side-timer-time"></span>
-      <span class="side-timer-bar" aria-hidden="true"><span></span></span>
-    </button>
+    <div class="side-timer-top">
+      <button type="button" class="side-timer-chip" aria-expanded="false" aria-controls="side-timer-${id}">
+        <span class="side-timer-name"></span>
+        <span class="side-timer-time"></span>
+      </button>
+      <button type="button" class="side-timer-bell" aria-expanded="false" aria-controls="side-timer-ring-${id}">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+          <path
+            d="M12 3a6 6 0 0 0-6 6v3.6L4.3 15.5A1 1 0 0 0 5.2 17h13.6a1 1 0 0 0 .9-1.5L18 12.6V9a6 6 0 0 0-6-6Zm-2.5 15a2.5 2.5 0 0 0 5 0Z"
+            fill="currentColor"
+          />
+        </svg>
+      </button>
+    </div>
+    <span class="side-timer-bar" aria-hidden="true"><span></span></span>
+    <div class="side-timer-ring" id="side-timer-ring-${id}" hidden>
+      <label for="side-timer-ring-select-${id}">Ring for this timer</label>
+      <select id="side-timer-ring-select-${id}"></select>
+    </div>
     <div class="side-timer-actions" id="side-timer-${id}" hidden>
       <button type="button" class="btn btn-small side-timer-pause">Pause</button>
       <button type="button" class="btn btn-small side-timer-reset">Reset</button>
@@ -303,11 +317,20 @@ function createSideTimer({ name, duration }, { onRemove, onTick }) {
   const pauseBtn = $('.side-timer-pause');
   const resetBtn = $('.side-timer-reset');
   const removeBtn = $('.side-timer-remove');
+  const bell = $('.side-timer-bell');
+  const ringPanel = $('.side-timer-ring');
+  const ringSelect = $('.side-timer-ring select');
+
+  // Empty means "use the ring chosen in the Ring tab".
+  let ringId = '';
 
   $('.side-timer-name').textContent = name;
   removeBtn.setAttribute('aria-label', `Remove side timer ${name}`);
+  bell.setAttribute('aria-label', `Change ring for ${name}`);
+  ringSelect.append(new Option('Same as Ring tab', ''), ...RINGS.map((r) => new Option(r.name, r.id)));
 
   const countdown = createCountdown({
+    ring: () => ringId || getRing(),
     onTick: render,
     onDone: () => setOpen(true),
   });
@@ -332,6 +355,23 @@ function createSideTimer({ name, duration }, { onRemove, onTick }) {
   }
 
   chip.addEventListener('click', () => setOpen(actions.hidden));
+  bell.addEventListener('click', () => {
+    const open = ringPanel.hidden;
+    ringPanel.hidden = !open;
+    bell.setAttribute('aria-expanded', String(open));
+    if (open) ringSelect.focus();
+  });
+  ringSelect.addEventListener('change', () => {
+    ringId = ringSelect.value;
+    bell.classList.toggle('is-custom', ringId !== '');
+    playRing(ringId || getRing());
+  });
+  ringSelect.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    ringPanel.hidden = true;
+    bell.setAttribute('aria-expanded', 'false');
+    bell.focus();
+  });
   pauseBtn.addEventListener('click', () => {
     if (countdown.state === 'running') countdown.pause();
     else countdown.start();

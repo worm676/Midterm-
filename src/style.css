@@ -902,7 +902,7 @@ input[type='number'] {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  width: 172px;
+  width: 188px;
   border: 1px solid var(--border);
   border-radius: 12px;
   background: var(--surface);
@@ -910,12 +910,63 @@ input[type='number'] {
   overflow: hidden;
 }
 
+.side-timer-top {
+  display: flex;
+  align-items: stretch;
+}
+
+.side-timer-bell {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  margin: 4px 4px 0 0;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.side-timer-bell:hover,
+.side-timer-bell[aria-expanded='true'] {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+/* A timer with its own ring shows a red bell. */
+.side-timer-bell.is-custom {
+  color: var(--accent);
+}
+
+.side-timer-ring {
+  display: grid;
+  gap: 4px;
+  padding: 8px;
+  border-top: 1px solid var(--border);
+}
+
+.side-timer-ring[hidden] {
+  display: none;
+}
+
+.side-timer-ring label {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.side-timer-ring select {
+  min-height: 40px;
+  font-size: 16px;
+}
+
 .side-timer-chip {
+  flex: 1;
+  min-width: 0;
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: baseline;
   gap: 2px 8px;
-  padding: 8px 12px 0;
+  padding: 8px 6px 0 12px;
   border: 0;
   background: none;
   text-align: left;
@@ -950,9 +1001,9 @@ input[type='number'] {
 }
 
 .side-timer-bar {
-  grid-column: 1 / -1;
+  display: block;
   height: 4px;
-  margin: 6px -12px 0;
+  margin-top: 6px;
   background: var(--surface-2);
 }
 
