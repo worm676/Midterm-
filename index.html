@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="Plan study tasks, run focus sprints, and track your next improvements." />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Study Sprint Planner</title>
+    <script>
+      // Apply the saved theme before first paint to avoid a flash.
+      (function () {
+        var choice = 'system';
+        try {
+          choice = localStorage.getItem('ssp.theme') || 'system';
+        } catch (e) {}
+        var dark =
+          choice === 'dark' ||
+          (choice === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+
+    <header class="site-header">
+      <div class="container header-inner">
+        <div class="brand">
+          <img src="/favicon.svg" alt="" width="36" height="36" />
+          <div>
+            <h1>Study Sprint Planner</h1>
+            <p class="tagline">Plan it. Focus. Check it off.</p>
+          </div>
+        </div>
+
+        <fieldset class="theme-switcher">
+          <legend class="visually-hidden">Color theme</legend>
+          <label>
+            <input type="radio" name="theme" value="light" />
+            <span>Light</span>
+          </label>
+          <label>
+            <input type="radio" name="theme" value="dark" />
+            <span>Dark</span>
+          </label>
+          <label>
+            <input type="radio" name="theme" value="system" />
+            <span>System</span>
+          </label>
+        </fieldset>
+      </div>
+    </header>
+
+    <main id="main" class="container layout">
+      <!-- Tasks -->
+      <section class="card tasks-card" aria-labelledby="tasks-heading">
+        <div class="card-head">
+          <h2 id="tasks-heading">Study tasks</h2>
+          <p class="muted" id="task-summary" aria-live="polite"></p>
+        </div>
+
+        <form id="task-form" class="task-form" autocomplete="off" novalidate>
+          <label for="task-input">New task</label>
+          <div class="input-row">
+            <input
+              id="task-input"
+              name="task"
+              type="text"
+              maxlength="120"
+              placeholder="e.g. Review chapter 4 notes"
+              required
+            />
+            <button type="submit" class="btn btn-primary">Add task</button>
+          </div>
+          <p class="error" id="task-error" role="alert"></p>
+        </form>
+
+        <ul id="task-list" class="task-list" aria-label="Study tasks"></ul>
+        <p id="task-empty" class="empty">No tasks yet. Add your first study task above.</p>
+      </section>
+
+      <!-- Timer -->
+      <section class="card timer-card" aria-labelledby="timer-heading">
+        <div class="card-head">
+          <h2 id="timer-heading">Study timer</h2>
+        </div>
+
+        <div class="timer-length">
+          <label for="timer-minutes">Sprint length</label>
+          <select id="timer-minutes">
+            <option value="15">15 minutes</option>
+            <option value="25" selected>25 minutes</option>
+            <option value="45">45 minutes</option>
+            <option value="60">60 minutes</option>
+          </select>
+        </div>
+
+        <div class="timer-display" role="timer" aria-labelledby="timer-heading">
+          <span id="timer-time">25:00</span>
+        </div>
+        <div class="progress" aria-hidden="true"><span id="timer-bar"></span></div>
+        <p id="timer-status" class="muted center" aria-live="polite">Ready when you are.</p>
+
+        <div class="timer-controls">
+          <button type="button" id="timer-start" class="btn btn-primary">Start</button>
+          <button type="button" id="timer-pause" class="btn" disabled>Pause</button>
+          <button type="button" id="timer-reset" class="btn">Reset</button>
+        </div>
+      </section>
+
+      <!-- Improvement waves -->
+      <section class="card waves-card" aria-labelledby="waves-heading">
+        <div class="card-head">
+          <h2 id="waves-heading">Next 4 Improvement Waves</h2>
+          <p class="muted" id="waves-summary" aria-live="polite"></p>
+        </div>
+        <div class="progress" aria-hidden="true"><span id="waves-bar"></span></div>
+        <ul id="waves-list" class="waves-list"></ul>
+      </section>
+    </main>
+
+    <footer class="site-footer container">
+      <p class="muted">Your data stays in this browser (localStorage). No account needed.</p>
+    </footer>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
