@@ -5,7 +5,7 @@ A simple, responsive study planner built for a class midterm project.
 ## Features
 
 - **Study tasks**: add, edit, mark complete, and delete tasks
-- **Study timer**: choose 15/25/45/60 minutes, then start, pause/resume, and reset
+- **Study timer**: choose any length from 5 to 120 minutes in 5-minute steps, then start, pause/resume, and reset
 - **Theme switcher**: Light, Dark, or System (follows your device setting)
 - **Next 4 Improvement Waves**: a four-item checklist with a progress bar
 - **Saves automatically**: tasks, checklist progress, and theme are stored in `localStorage`, so they survive a refresh

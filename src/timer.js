@@ -5,8 +5,24 @@ function format(ms) {
   return `${m}:${s}`;
 }
 
+const MIN_MINUTES = 5;
+const MAX_MINUTES = 120;
+const STEP_MINUTES = 5;
+const DEFAULT_MINUTES = 25;
+
+function fillLengthOptions(select) {
+  const options = [];
+  for (let m = MIN_MINUTES; m <= MAX_MINUTES; m += STEP_MINUTES) {
+    const option = new Option(`${m} minutes`, String(m));
+    option.selected = m === DEFAULT_MINUTES;
+    options.push(option);
+  }
+  select.replaceChildren(...options);
+}
+
 export function initTimer() {
   const select = document.getElementById('timer-minutes');
+  fillLengthOptions(select);
   const timeEl = document.getElementById('timer-time');
   const bar = document.getElementById('timer-bar');
   const status = document.getElementById('timer-status');
