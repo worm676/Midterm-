@@ -6,6 +6,7 @@ import { initNextSteps } from './nextSteps.js';
 import { initArt } from './art.js';
 import { initRingMenu } from './ringMenu.js';
 import { initMusicMenu } from './musicMenu.js';
+import { initStoody } from './stoody.js';
 
 initTheme();
 initTasks();
@@ -14,3 +15,4 @@ initNextSteps();
 initArt();
 initRingMenu();
 initMusicMenu();
+initStoody();

@@ -20,6 +20,24 @@ function formatMinutes(total) {
   return m ? `${h} h ${m} min` : `${h} h`;
 }
 
+// "Completed today at 3:42 PM", or with the date when it was another day.
+function formatCompleted(iso) {
+  const date = new Date(iso);
+  const now = new Date();
+  const time = date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  if (date.toDateString() === now.toDateString()) return `Completed today at ${time}`;
+  const day = date.toLocaleDateString([], {
+    month: 'short',
+    day: 'numeric',
+    ...(date.getFullYear() !== now.getFullYear() && { year: 'numeric' }),
+  });
+  return `Completed ${day} at ${time}`;
+}
+
+function validDate(value) {
+  return typeof value === 'string' && !Number.isNaN(Date.parse(value)) ? value : null;
+}
+
 function sanitize(list) {
   if (!Array.isArray(list)) return [];
   return list
@@ -31,6 +49,7 @@ function sanitize(list) {
         title: t.title.trim(),
         done: Boolean(t.done),
         minutes: Number.isNaN(minutes) ? null : minutes,
+        completedAt: t.done ? validDate(t.completedAt) : null,
       };
     });
 }
@@ -70,6 +89,7 @@ export function initTasks() {
     box.checked = task.done;
     box.addEventListener('change', () => {
       task.done = box.checked;
+      task.completedAt = box.checked ? new Date().toISOString() : null;
       persist();
       render();
       focusTask(task.id);
@@ -89,6 +109,14 @@ export function initTasks() {
       hint.textContent = 'Time needed: ';
       time.append(hint, formatMinutes(task.minutes));
       text.append(time);
+    }
+    if (task.done && task.completedAt) {
+      const stamp = document.createElement('time');
+      stamp.className = 'task-completed';
+      stamp.dateTime = task.completedAt;
+      stamp.textContent = formatCompleted(task.completedAt);
+      stamp.title = new Date(task.completedAt).toLocaleString();
+      text.append(stamp);
     }
 
     label.append(box, text);
@@ -244,7 +272,7 @@ export function initTasks() {
       return;
     }
     error.textContent = '';
-    tasks.push({ id: makeId(), title, done: false, minutes });
+    tasks.push({ id: makeId(), title, done: false, minutes, completedAt: null });
     persist();
     input.value = '';
     minutesInput.value = '';
