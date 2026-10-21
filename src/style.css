@@ -543,6 +543,12 @@ input[type='number'] {
   touch-action: pan-y;
 }
 
+/* Follow the mouse freely while dragging; snapping resumes on release. */
+.wheel.is-dragging {
+  scroll-snap-type: none;
+  cursor: grabbing;
+}
+
 .wheel::-webkit-scrollbar {
   display: none;
 }

@@ -1,7 +1,10 @@
 // An iPhone-style scroll wheel picker built on CSS scroll snapping.
-// Works with touch swipes, mouse wheel / trackpad, clicks, and the keyboard.
+// Works with touch swipes, mouse wheel / trackpad, mouse dragging, clicks, and the keyboard.
 
 const ITEM_HEIGHT = 44;
+const DRAG_THRESHOLD = 4;
+const MOMENTUM_MS = 120;
+const MAX_MOMENTUM_ROWS = 5;
 
 export function createWheel(el, { values, format, describe, initial, onChange }) {
   const list = document.createElement('ul');
@@ -24,6 +27,7 @@ export function createWheel(el, { values, format, describe, initial, onChange })
   let index = Math.max(0, values.indexOf(initial));
   let settleTimer = null;
   let frame = null;
+  let drag = null;
 
   function clamp(i) {
     return Math.min(values.length - 1, Math.max(0, i));
@@ -72,10 +76,51 @@ export function createWheel(el, { values, format, describe, initial, onChange })
     clearTimeout(settleTimer);
     settleTimer = setTimeout(() => {
       // Hiding the wheel resets its scroll position; that is not a user choice.
-      if (el.clientHeight === 0) return;
+      if (el.clientHeight === 0 || drag) return;
       commit(clamp(Math.round(el.scrollTop / ITEM_HEIGHT)));
     }, 120);
   });
+
+  // Mouse dragging (touch already scrolls natively).
+  el.addEventListener('pointerdown', (e) => {
+    if (e.pointerType !== 'mouse' || e.button !== 0) return;
+    drag = { startY: e.clientY, startTop: el.scrollTop, moved: false, lastY: e.clientY, lastTime: e.timeStamp, velocity: 0 };
+  });
+
+  el.addEventListener('pointermove', (e) => {
+    if (!drag) return;
+    const dy = e.clientY - drag.startY;
+    if (!drag.moved) {
+      if (Math.abs(dy) < DRAG_THRESHOLD) return;
+      drag.moved = true;
+      el.setPointerCapture(e.pointerId);
+      el.classList.add('is-dragging');
+    }
+    const dt = e.timeStamp - drag.lastTime;
+    if (dt > 0) drag.velocity = (e.clientY - drag.lastY) / dt;
+    drag.lastY = e.clientY;
+    drag.lastTime = e.timeStamp;
+    el.scrollTop = drag.startTop - dy;
+  });
+
+  function endDrag(e) {
+    if (!drag) return;
+    const { moved, lastTime } = drag;
+    // No momentum if the mouse had come to rest before release.
+    const velocity = e.timeStamp - lastTime > 80 ? 0 : drag.velocity;
+    drag = null;
+    if (!moved) return;
+    el.classList.remove('is-dragging');
+    if (el.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId);
+    // Carry a little momentum, then snap to the nearest value.
+    const fling = Math.max(-MAX_MOMENTUM_ROWS, Math.min(MAX_MOMENTUM_ROWS, (-velocity * MOMENTUM_MS) / ITEM_HEIGHT));
+    setIndex(Math.round(el.scrollTop / ITEM_HEIGHT + fling), true);
+    // Swallow the click that follows a drag so it doesn't select the row under the cursor.
+    el.addEventListener('click', (ev) => ev.stopPropagation(), { capture: true, once: true });
+  }
+
+  el.addEventListener('pointerup', endDrag);
+  el.addEventListener('pointercancel', endDrag);
 
   el.addEventListener('keydown', (e) => {
     const steps = { ArrowUp: 1, ArrowDown: -1, PageUp: 3, PageDown: -3 };
