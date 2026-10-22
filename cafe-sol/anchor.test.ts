@@ -26,12 +26,13 @@ describe("cafe_sol", () => {
       .accounts({ useCase, step: stepPda(useCase, i), recorder: pg.wallet.publicKey })
       .rpc({ commitment: "confirmed" });
   const expectError = async (p: Promise<unknown>, code: string) => {
+    let err = "";
     try {
       await p;
-      assert.fail(`expected ${code}`);
     } catch (e) {
-      assert.include(String(e), code);
+      err = String(e);
     }
+    assert.ok(err.includes(code), `expected ${code}, got: ${err || "no error"}`);
   };
 
   const run = Date.now();
