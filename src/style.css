@@ -153,6 +153,66 @@ select {
   font-size: 0.875rem;
 }
 
+.header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 12px;
+}
+
+/* Account: "Continue with Google", or the signed-in name and picture */
+.account {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.btn.google-btn {
+  gap: 10px;
+  border-color: var(--border);
+  background: var(--surface);
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.account-profile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.account-avatar {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 3px var(--border);
+}
+
+.account-initial {
+  display: grid;
+  place-items: center;
+  background: var(--primary);
+  color: var(--primary-text);
+  font-weight: 700;
+}
+
+.account-name {
+  max-width: 160px;
+  overflow: hidden;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.account-error {
+  max-width: 260px;
+  color: var(--danger);
+  font-size: 0.8rem;
+}
+
 .theme-switcher {
   display: inline-flex;
   margin: 0;

@@ -8,6 +8,7 @@ import { initRingMenu } from './ringMenu.js';
 import { initMusicMenu } from './musicMenu.js';
 import { initStoody } from './stoody.js';
 import { initPulse } from './pulse.js';
+import { initAuth } from './auth.js';
 
 initTheme();
 initTasks();
@@ -18,3 +19,4 @@ initRingMenu();
 initMusicMenu();
 initStoody();
 initPulse();
+initAuth();

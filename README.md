@@ -16,12 +16,21 @@ A simple, responsive study planner built for a class midterm project.
 - **Saves automatically**: tasks, improvement waves checklist (text and progress), theme, timer setups, ring choice, and music choice/volume are stored in `localStorage`, so they survive a refresh
 - **Responsive and accessible**: works at iPhone 16 Pro Max width (440px), has 44px touch targets, labelled controls, visible focus rings, a skip link, and full keyboard support (Enter saves an edit, Escape cancels it)
 
-No login, database, or external API. All data stays in the browser.
+- **Continue with Google (optional)**: sign in with Google through Supabase Auth; the header then shows your name and profile picture. Everything else works without signing in, and your study data still stays in this browser.
+
+## Google sign-in setup (Supabase)
+
+The app uses the Supabase project `tufyhrugtpfhaxvgpliw` with its publishable key (safe to ship in browser code). For the button to work:
+
+1. **Google Cloud Console → APIs & Services → Credentials**: create an OAuth client ID (type *Web application*) and add this **Authorized redirect URI**: `https://tufyhrugtpfhaxvgpliw.supabase.co/auth/v1/callback`
+2. **Supabase dashboard → Authentication → Sign In / Providers → Google**: turn it on and paste the Google client ID and client secret.
+3. **Supabase dashboard → Authentication → URL Configuration**: set **Site URL** to your Netlify URL, and add these **Redirect URLs**: your Netlify URL (e.g. `https://your-site.netlify.app/**`) and `http://localhost:5173/**` for local testing.
 
 ## Tech stack
 
 - [Vite](https://vite.dev/) (build tool and dev server)
 - Plain HTML, CSS, and JavaScript (no framework)
+- [Supabase JS](https://supabase.com/docs/reference/javascript) for the optional Google sign-in
 
 ## Run locally
 
@@ -72,6 +81,7 @@ src/musicMenu.js  Music picker tab
 src/nextSteps.js  "Next 4 Improvement Waves" checklist
 src/stoody.js     Stoody the study buddy owl
 src/pulse.js      Background click ripple
+src/auth.js       Continue with Google sign-in (Supabase)
 src/storage.js    Safe localStorage helpers
 src/style.css     Styles
 ```
